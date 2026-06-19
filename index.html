@@ -317,8 +317,8 @@
     background: #7f1d1d; border-top: none; padding: 28px 64px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .footer-copy { font-size: 24px; color: rgba(255,255,255,0.8); font-weight: 500; }
-  .footer-tagline { font-size: 24px; color: rgba(255,255,255,0.65); }
+  .footer-copy { font-size: 18px; color: rgba(255,255,255,0.8); font-weight: 500; }
+  .footer-tagline { font-size: 18px; color: rgba(255,255,255,0.65); }
 
   /* ── NAV DEMO BTN ── */
   .nav-demo-btn {
@@ -403,7 +403,7 @@
 
 <!-- ══ SECTION 1: HERO + VIDEO ══ -->
 <section id="hero" style="padding-top:24px;">
-  <div style="font-size:32px;font-weight:900;color:#111827;letter-spacing:-0.5px;line-height:1.15;margin-bottom:16px;text-align:center;">Education just changed.<span style="color:#2463EB;"> Forever.</span></div>
+  <div style="font-size:32px;font-weight:900;color:#111827;letter-spacing:-0.5px;line-height:1.15;margin-bottom:16px;text-align:center;">Education just changed.<span style="background:linear-gradient(90deg,#2463EB,#7c3aed,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"> Forever.</span></div>
   <div class="sec-tag" style="color:#6366f1;margin-bottom:20px;">What is VidyaNetra</div>
   <div class="two-col" style="align-items:stretch;">
     <div style="display:flex;flex-direction:column;gap:16px;">
@@ -650,7 +650,7 @@
     <button class="demo-close" onclick="closeDemoModal()">✕</button>
     <div id="demo-login-view">
       <h2>Free Demo Access</h2>
-      <p>Enter your credentials to access the VidyaNetra demo. Don't have access yet? <a href="#contact-faq" onclick="closeDemoModal();scrollToContact();">Get in touch</a> and we'll set you up.</p>
+      <p>Enter your credentials to access the VidyaNetra demo. Don't have access yet? <a href="javascript:void(0)" onclick="goToContact()">Get in touch</a> and we'll set you up.</p>
       <div class="demo-field">
         <label>Username</label>
         <input type="text" id="demo-uid" placeholder="Enter username" autocomplete="off">
@@ -661,12 +661,12 @@
       </div>
       <div class="demo-error" id="demo-error">Incorrect credentials. Please try again.</div>
       <button class="demo-submit" onclick="submitDemo()">Enter Demo →</button>
-      <p class="demo-note">No account? <a href="#contact-faq" onclick="closeDemoModal();scrollToContact();">Contact us</a> to receive your credentials.</p>
+      <p class="demo-note">No account? <a href="javascript:void(0)" onclick="goToContact()">Contact us</a> to receive your credentials.</p>
     </div>
     <div class="demo-construction" id="demo-construction-view">
       <div class="const-icon">🚧</div>
       <h3>Demo Coming Soon</h3>
-      <p>We're putting the finishing touches on the VidyaNetra demo environment. Check back shortly or <a href="#contact-faq" onclick="closeDemoModal();scrollToContact();" style="color:#2463EB;font-weight:600;">get in touch</a> to schedule a live walkthrough.</p>
+      <p>We're putting the finishing touches on the VidyaNetra demo environment. Check back shortly or <a href="javascript:void(0)" onclick="goToContact()" style="color:#2463EB;font-weight:600;">get in touch</a> to schedule a live walkthrough.</p>
     </div>
   </div>
 </div>
@@ -714,6 +714,14 @@
       const card = document.querySelector('.contact-card');
       if (card) triggerGlow(card, 'glow-blue');
     }, 600);
+  }
+  function goToContact() {
+    closeDemoModal();
+    document.getElementById('contact-faq').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      const card = document.querySelector('.contact-card');
+      if (card) triggerGlow(card, 'glow-blue');
+    }, 800);
   }
 
   document.querySelectorAll('a[href="#contact-faq"]').forEach(link => {
