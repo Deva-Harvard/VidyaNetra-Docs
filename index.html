@@ -1,296 +1,605 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VidyaNetra — How It Works</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidyaNetra — AI-powered evaluation and analytics for schools</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     background: #ffffff;
-    padding: 52px 24px 60px;
-    text-align: center;
-  }
-
-  .page-title {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #6366f1;
-    margin-bottom: 10px;
-  }
-  .page-heading {
-    font-size: 30px;
-    font-weight: 800;
     color: #111827;
-    margin-bottom: 10px;
-    line-height: 1.2;
-  }
-  .page-sub {
-    font-size: 14px;
-    color: #6b7280;
-    max-width: 420px;
-    line-height: 1.65;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 48px;
   }
 
-  .flow {
-    width: 600px;
-    margin: 0 auto;
-    text-align: left;
-  }
-
-  .step {
-    width: 100%;
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #f3f4f6;
+    padding: 0 64px;
+    height: 60px;
     display: flex;
-    align-items: flex-start;
-    gap: 18px;
-    padding: 22px 24px;
-    border-radius: 14px;
-    border: 1.5px solid;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; text-decoration: none; }
+  .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-size: 13px; font-weight: 600; color: #6b7280;
+    text-decoration: none; letter-spacing: 0.2px; transition: color 0.15s;
+  }
+  .nav-links a:hover { color: #111827; }
+  .nav-cta {
+    color: #ffffff !important; background: #16a34a;
+    padding: 7px 18px; border-radius: 8px; transition: background 0.15s !important;
+  }
+  .nav-cta:hover { background: #15803d; color: #fff !important; }
+
+  /* ── LAYOUT ── */
+  section { padding: 80px 64px; }
+  .section-divider { height: 1px; background: #f3f4f6; margin: 0 64px; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .sec-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .sec-heading {
+    font-size: 26px; font-weight: 900; line-height: 1.25;
+    color: #111827; margin-bottom: 10px;
+  }
+  .sec-sub {
+    font-size: 14px; color: #6b7280; line-height: 1.75; margin-bottom: 28px;
   }
 
-  .step-left {
+  /* ══ SECTION 1 — HERO ══ */
+  #hero { padding-top: 72px; padding-bottom: 72px; }
+  #hero .two-col { align-items: stretch; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+    text-transform: uppercase; color: #6b7280;
+    background: #f3f4f6; border: 1.5px solid #e5e7eb;
+    padding: 6px 14px; border-radius: 20px; margin-bottom: 24px;
+  }
+  .hero-dot { width: 6px; height: 6px; border-radius: 50%; background: #6b7280; }
+  .hero-logo-wrap { margin-bottom: 28px; }
+  .first-time { font-size: 14px; font-weight: 700; color: #374151; margin-bottom: 14px; }
+  .hero-box {
+    font-size: 14px; line-height: 1.85; margin-bottom: 16px;
+    border-radius: 0 8px 8px 0; padding: 14px 18px;
+  }
+  .hero-box-blue { background: #eff6ff; border-left: 3px solid #93c5fd; color: #1e3a5f; }
+  .hero-box-pink { background: #fff0f4; border-left: 3px solid #f9a8c0; color: #5a1a2e; }
+  .hero-box-pink b { color: #111827; }
+
+  .video-wrap {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    border-radius: 16px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px; color: #fff;
+    min-height: 200px;
+  }
+  .play-btn {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .video-label { font-size: 15px; font-weight: 700; color: #c7d2fe; }
+  .video-sub { font-size: 12px; color: #818cf8; }
+
+  /* ══ SECTION 2 — HOW IT WORKS ══ */
+  #how { background: #fafafa; }
+
+  .flow-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+    margin-bottom: 40px;
+    align-items: stretch;
+  }
+
+  .flow-step {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-    width: 42px;
-    padding-top: 2px;
-  }
-  .step-num {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    font-weight: 800;
-  }
-  .step-emoji { font-size: 20px; line-height: 1; }
-
-  .step-right { flex: 1; }
-  .step-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-    display: block;
-  }
-  .step-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #111827;
-    margin-bottom: 6px;
-    line-height: 1.35;
-  }
-  .step-desc {
-    font-size: 13px;
-    color: #6b7280;
-    line-height: 1.65;
-  }
-  .step-desc b { color: #374151; font-weight: 600; }
-
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; }
-  .t-purple { background: #ede9fe; color: #6d28d9; }
-  .t-blue   { background: #dbeafe; color: #1e40af; }
-  .t-green  { background: #dcfce7; color: #166534; }
-  .t-orange { background: #ffedd5; color: #9a3412; }
-
-  .s1 { background: #f5f3ff; border-color: #c4b5fd; }
-  .s1 .step-num { background: #6366f1; color: #fff; }
-  .s1 .step-label { color: #7c3aed; }
-
-  .s2 { background: #eff6ff; border-color: #93c5fd; }
-  .s2 .step-num { background: #3b82f6; color: #fff; }
-  .s2 .step-label { color: #1d4ed8; }
-
-  .s3 { background: #f0fdf4; border-color: #86efac; }
-  .s3 .step-num { background: #22c55e; color: #fff; }
-  .s3 .step-label { color: #16a34a; }
-
-  .s4 { background: #fff7ed; border-color: #fdba74; }
-  .s4 .step-num { background: #f97316; color: #fff; }
-  .s4 .step-label { color: #c2410c; }
-
-  .connector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 3px 0;
-  }
-  .conn-line { width: 2px; height: 20px; background: #e5e7eb; }
-  .conn-arrow {
-    width: 0; height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 8px solid #d1d5db;
-  }
-
-  .outcome-inner {
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e1b4b 100%);
-    border-radius: 16px;
-    padding: 28px 32px;
     text-align: center;
+    padding: 0 20px;
+    position: relative;
   }
+
+  /* Prominent arrow at midpoint of the cards */
+  .flow-step:not(:last-child)::after {
+    content: '⟶';
+    position: absolute;
+    right: -18px;
+    top: calc(50% + 30px);
+    transform: translateY(-50%);
+    font-size: 28px;
+    color: #9ca3af;
+    line-height: 1;
+    z-index: 1;
+  }
+
+  .step-circle {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: #fff;
+    margin-bottom: 16px; flex-shrink: 0;
+  }
+  .sc1 { background: #6366f1; }
+  .sc2 { background: #3b82f6; }
+  .sc3 { background: #22c55e; }
+  .sc4 { background: #f97316; }
+
+  .step-card {
+    border-radius: 12px; padding: 20px 16px;
+    width: 100%; text-align: left; flex: 1;
+  }
+  .step-card-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 6px; display: block;
+  }
+  .step-card-title { font-size: 14px; font-weight: 800; color: #111827; margin-bottom: 6px; line-height: 1.35; }
+  .step-card-desc { font-size: 12px; color: #6b7280; line-height: 1.6; }
+  .sc1-bg { background: #f5f3ff; border: 1.5px solid #c4b5fd; }
+  .sc1-bg .step-card-label { color: #7c3aed; }
+  .sc2-bg { background: #eff6ff; border: 1.5px solid #93c5fd; }
+  .sc2-bg .step-card-label { color: #1d4ed8; }
+  .sc3-bg { background: #f0fdf4; border: 1.5px solid #86efac; }
+  .sc3-bg .step-card-label { color: #16a34a; }
+  .sc4-bg { background: #fff7ed; border: 1.5px solid #fdba74; }
+  .sc4-bg .step-card-label { color: #c2410c; }
+
+  .outcome-bar {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    border-radius: 14px; padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .outcome-left { flex: 1; }
   .outcome-tag {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #a5b4fc;
-    margin-bottom: 8px;
+    font-size: 9px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #a5b4fc; margin-bottom: 6px;
   }
-  .outcome-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: #fff;
-    margin-bottom: 8px;
-    line-height: 1.35;
-  }
-  .outcome-sub {
-    font-size: 13px;
-    color: #c7d2fe;
-    line-height: 1.7;
-    margin: 0 auto 18px;
-  }
-  .outcome-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .outcome-title { font-size: 16px; font-weight: 800; color: #fff; line-height: 1.3; }
+  .outcome-pills { display: flex; flex-wrap: wrap; gap: 8px; }
   .opill {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 5px 14px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.1);
-    color: #e0e7ff;
-    border: 1px solid rgba(255,255,255,0.18);
+    font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px;
+    background: rgba(255,255,255,0.1); color: #e0e7ff;
+    border: 1px solid rgba(255,255,255,0.18); white-space: nowrap;
   }
 
-  .brand-footer {
-    margin-top: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    opacity: 0.4;
+  /* ══ SECTION 3 — TWIN BENEFITS ══ */
+  .benefits-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px; align-items: stretch;
   }
-  .brand-dot { width: 7px; height: 7px; border-radius: 50%; background: #6366f1; }
-  .brand-name { font-size: 12px; font-weight: 700; color: #374151; }
+  .ben-card {
+    border-radius: 16px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .ben-card-1 { background: #f5f7ff; border: 1.5px solid #dde3f8; }
+  .ben-card-2 { background: #f3faf5; border: 1.5px solid #d4edd9; }
+  .ben-heading { font-size: 17px; font-weight: 800; color: #111827; line-height: 1.35; }
+  .ben-divider { height: 1.5px; border-radius: 2px; }
+  .ben-card-1 .ben-divider { background: #dde3f8; }
+  .ben-card-2 .ben-divider { background: #d4edd9; }
+  .ben-points { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .ben-point { display: flex; gap: 12px; align-items: flex-start; }
+  .ben-icon { font-size: 15px; margin-top: 2px; flex-shrink: 0; }
+  .ben-text { font-size: 13.5px; line-height: 1.7; color: #3d4461; }
+  .ben-card-2 .ben-text { color: #2d4a38; }
+  .ben-footer { font-size: 13px; font-weight: 600; padding: 11px 14px; border-radius: 8px; margin-top: auto; }
+  .ben-card-1 .ben-footer { background: #eaedfa; color: #4a57a8; }
+  .ben-card-2 .ben-footer { background: #e3f2e8; color: #2d6b45; }
+
+  /* ══ SECTION 4 — TRIAL + WHY ══ */
+  #trial-why { background: #fafafa; }
+
+  .trial-card {
+    background: #f0fdf4; border: 1.5px solid #86efac;
+    border-radius: 16px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 14px; height: 100%;
+  }
+  .trial-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #16a34a; }
+  .trial-heading { font-size: 22px; font-weight: 900; color: #111827; line-height: 1.25; }
+  .trial-divider { height: 1.5px; background: #bbf7d0; border-radius: 2px; }
+  .trial-items { display: flex; flex-direction: column; gap: 10px; }
+  .trial-item { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #166534; }
+  .trial-item-icon {
+    width: 28px; height: 28px; background: #dcfce7; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+  }
+  .after-card {
+    background: #fff8f4; border: 1.5px solid #f7d5c2;
+    border-radius: 12px; padding: 20px; margin-top: 4px;
+  }
+  .after-heading { font-size: 13px; font-weight: 800; color: #111827; margin-bottom: 8px; }
+  .after-text { font-size: 13px; color: #6b7280; line-height: 1.7; margin-bottom: 14px; }
+  .cta-btn {
+    display: inline-block; padding: 10px 20px; background: #16a34a;
+    color: #ffffff; font-size: 13px; font-weight: 700; border-radius: 8px;
+    text-decoration: none; transition: background 0.15s;
+  }
+  .cta-btn:hover { background: #15803d; }
+
+  .why-card {
+    background: #fff4ee; border: 1.5px solid #f7d5c2;
+    border-radius: 16px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 16px; height: 100%;
+  }
+  .why-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c4704a; }
+  .why-heading { font-size: 18px; font-weight: 800; color: #111827; line-height: 1.3; }
+  .why-divider { height: 1.5px; background: #f7d5c2; border-radius: 2px; }
+  .why-stats { display: flex; flex-direction: column; gap: 8px; }
+  .why-stat {
+    display: flex; gap: 12px; align-items: center;
+    padding: 9px 12px; background: rgba(255,255,255,0.7); border-radius: 8px;
+  }
+  .why-stat-icon { font-size: 14px; flex-shrink: 0; }
+  .why-stat-text { font-size: 13px; color: #3d4461; line-height: 1.5; }
+  .why-stat-text b { color: #1a1f36; }
+  .why-footer {
+    font-size: 13px; font-weight: 600; padding: 11px 14px; border-radius: 8px;
+    background: #fde4d4; color: #a0522d; margin-top: auto;
+  }
+
+  /* ══ SECTION 5 — CONTACT + FAQS ══ */
+  #contact-faq .two-col { align-items: stretch; }
+  .contact-card {
+    background: #fff8f4; border: 1.5px solid #f7d5c2;
+    border-radius: 16px; padding: 32px 28px;
+    height: 100%;
+  }
+  .contact-heading { font-size: 20px; font-weight: 900; color: #111827; margin-bottom: 6px; }
+  .contact-sub { font-size: 13px; color: #6b7280; line-height: 1.7; margin-bottom: 24px; }
+  .contact-divider { height: 1.5px; background: #f7d5c2; border-radius: 2px; margin-bottom: 24px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  label { font-size: 11.5px; font-weight: 700; color: #374151; }
+  .req { color: #e11d48; font-weight: 700; }
+  input, textarea {
+    width: 100%; padding: 9px 13px; border: 1.5px solid #e5e7eb;
+    border-radius: 8px; font-size: 13.5px; font-family: inherit;
+    color: #111827; background: #ffffff; outline: none; transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: #f9a8c0; }
+  textarea { resize: none; height: 80px; }
+  .submit-btn {
+    margin-top: 6px; padding: 11px 28px; background: #16a34a;
+    color: #ffffff; font-size: 13.5px; font-weight: 700;
+    border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s;
+  }
+  .submit-btn:hover { background: #15803d; }
+  .form-note { font-size: 11px; color: #9ca3af; margin-top: 12px; }
+  .success-msg { display: none; font-size: 14px; color: #166534; font-weight: 600; padding: 20px 0; }
+
+  /* FAQs — light pink box */
+  .faq-card {
+    background: #fdf2f8; border: 1.5px solid #f0c4e0;
+    border-radius: 16px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 0;
+    height: 100%;
+  }
+  .faq-heading { font-size: 20px; font-weight: 900; color: #111827; margin-bottom: 6px; }
+  .faq-sub { font-size: 13px; color: #6b7280; line-height: 1.7; margin-bottom: 24px; }
+  .faq-top-divider { height: 1.5px; background: #f0c4e0; border-radius: 2px; margin-bottom: 24px; }
+
+  .faq-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .faq-item { border: 1.5px solid #f0c4e0; border-radius: 10px; overflow: hidden; }
+  details summary {
+    padding: 14px 18px; font-size: 13.5px; font-weight: 700; color: #111827;
+    cursor: pointer; list-style: none; display: flex;
+    justify-content: space-between; align-items: center; background: rgba(255,255,255,0.6);
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after {
+    content: '+'; font-size: 18px; font-weight: 300; color: #c4704a;
+    flex-shrink: 0; margin-left: 12px;
+  }
+  details[open] summary::after { content: '−'; }
+  details[open] summary { background: #fff; border-bottom: 1px solid #f0c4e0; }
+  .faq-answer {
+    padding: 12px 18px; font-size: 13px; color: #6b7280; line-height: 1.75; background: #fff;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid #f3f4f6; padding: 28px 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-copy { font-size: 12px; color: #9ca3af; }
+  .footer-tagline { font-size: 12px; color: #9ca3af; }
 </style>
 </head>
 <body>
 
-<div class="page-title">How It Works</div>
-<div class="page-heading">From Answer Sheet to Insight in Minutes</div>
-<div class="page-sub">A simple four-step process that transforms the way schools understand student performance.</div>
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#hero">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="72 30 660 235" height="48" role="img" aria-label="VidyaNetra">
+      <g transform="translate(72 42)">
+        <path d="M 24 74 C 36 68, 50 76, 60 92 L 76 118 C 82 128, 92 128, 98 117 L 136 43 C 145 26, 156 15, 168 10 C 164 27, 156 45, 145 64 L 106 132 C 94 153, 70 151, 58 132 L 26 84 C 22 79, 21 76, 24 74 Z" fill="#21C45D"/>
+        <text x="146" y="134" fill="#2463EB" font-family="'Segoe UI', Arial, sans-serif" font-size="96" font-weight="800" letter-spacing="-3.5">idyaNetra</text>
+        <text x="24" y="194" fill="#2463EB" opacity="0.75" font-family="'Segoe UI', Arial, sans-serif" font-size="31" font-weight="600" letter-spacing="-0.2" textLength="620" lengthAdjust="spacing">AI-powered evaluation and analytics</text>
+      </g>
+    </svg>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#benefits">Benefits</a></li>
+    <li><a href="#trial-why">Pricing</a></li>
+    <li><a href="#contact-faq">Contact</a></li>
+    <li><a href="#contact-faq" class="nav-cta">Get in touch</a></li>
+  </ul>
+</nav>
 
-<div class="flow">
-
-  <div class="step s1">
-    <div class="step-left">
-      <div class="step-num">1</div>
-      <div class="step-emoji">📤</div>
+<!-- ══ SECTION 1: HERO + VIDEO ══ -->
+<section id="hero">
+  <div class="sec-tag" style="color:#6366f1;margin-bottom:20px;">What is VidyaNetra</div>
+  <div class="two-col" style="align-items:stretch;">
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="first-time">For the first time in the history of education,</div>
+      <div class="hero-box hero-box-blue" style="margin-bottom:0;">
+        Evaluation that once took teachers entire weekends now completes in minutes — under teacher supervision.
+      </div>
+      <div class="hero-box hero-box-pink" style="margin-bottom:0;flex:1;">
+        VidyaNetra generates granular intelligence on every student — pinpointing exactly why each mark was lost, whether it is a conceptual gap, a subject-specific weakness, or simply careless errors. This is a new dataset that lets teachers help every student improve surgically, not generically.
+      </div>
     </div>
-    <div class="step-right">
-      <span class="step-label">Upload</span>
-      <div class="step-title">Upload the Question Paper, Answer Key &amp; Student Scripts</div>
-      <div class="step-desc">The school uploads the question paper, the marking rubric or answer key, and scanned student answer sheets — all in one go. <b>Supports handwritten scripts, printed answer books, and mixed formats.</b></div>
-      <div class="tags">
-        <span class="tag t-purple">Question Paper</span>
-        <span class="tag t-purple">Answer Key / Rubric</span>
-        <span class="tag t-purple">Student Answer Sheets</span>
-        <span class="tag t-purple">Any Format · Any Subject</span>
+    <div class="video-wrap">
+      <div class="play-btn">▶</div>
+      <div class="video-label">Watch VidyaNetra in action</div>
+      <div class="video-sub">Demo video coming soon</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ SECTION 2: HOW IT WORKS ══ -->
+<section id="how">
+  <div class="sec-tag" style="color:#6366f1">How it works</div>
+  <div class="sec-heading">From answer sheet to insight in minutes</div>
+  <div class="sec-sub">A simple four-step process that transforms the way schools understand student performance.</div>
+
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="step-circle sc1">1</div>
+      <div class="step-card sc1-bg">
+        <span class="step-card-label">Upload</span>
+        <div class="step-card-title">Upload the question paper, answer key & student scripts</div>
+        <div class="step-card-desc">Supports handwritten scripts, printed answer books, and mixed formats.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-circle sc2">2</div>
+      <div class="step-card sc2-bg">
+        <span class="step-card-label">AI evaluation</span>
+        <div class="step-card-title">VidyaNetra evaluates hundreds of scripts in minutes</div>
+        <div class="step-card-desc">Criterion by criterion. Every lost mark is explained, not just counted.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-circle sc3">3</div>
+      <div class="step-card sc3-bg">
+        <span class="step-card-label">Teacher review</span>
+        <div class="step-card-title">Teachers review, adjust & approve</div>
+        <div class="step-card-desc">Full AI reasoning visible. One-click override. Teacher is always in control.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-circle sc4">4</div>
+      <div class="step-card sc4-bg">
+        <span class="step-card-label">Analytics</span>
+        <div class="step-card-title">Intelligence that has never existed before</div>
+        <div class="step-card-desc">Student, class, school, and inter-school insights — all in one place.</div>
       </div>
     </div>
   </div>
 
-  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+</section>
 
-  <div class="step s2">
-    <div class="step-left">
-      <div class="step-num">2</div>
-      <div class="step-emoji">⚡</div>
+<div class="section-divider"></div>
+
+<!-- ══ SECTION 3: TWIN BENEFITS ══ -->
+<section id="benefits">
+  <div class="sec-tag" style="color:#3b82f6">What changes</div>
+  <div class="sec-heading">A dual revolution in education.</div>
+  <div class="benefits-grid">
+    <div class="ben-card ben-card-1">
+      <div class="ben-heading">Evaluation time drops from entire weekends to a few minutes.</div>
+      <div class="ben-divider"></div>
+      <div class="ben-points">
+        <div class="ben-point"><div class="ben-icon">⚡</div><div class="ben-text">Hundreds of answer scripts evaluated in minutes — with full, criterion-level reasoning for every single answer.</div></div>
+        <div class="ben-point"><div class="ben-icon">✅</div><div class="ben-text">Teachers review, adjust, and approve marks — staying fully in control while spending a fraction of the time.</div></div>
+        <div class="ben-point"><div class="ben-icon">🗓️</div><div class="ben-text">What once consumed entire teacher weekends now completes before the next period begins.</div></div>
+      </div>
+      <div class="ben-footer">Less time correcting. More time teaching.</div>
     </div>
-    <div class="step-right">
-      <span class="step-label">AI Evaluation</span>
-      <div class="step-title">VidyaNetra Evaluates Hundreds of Scripts in Minutes</div>
-      <div class="step-desc">Our AI reads each answer against the rubric — <b>criterion by criterion, step by step.</b> It recognises diagrams, checks derivations, validates equations, and flags inconsistencies. Every lost mark is explained, not just counted.</div>
-      <div class="tags">
-        <span class="tag t-blue">Criterion-level Scoring</span>
-        <span class="tag t-blue">Diagram Recognition</span>
-        <span class="tag t-blue">Step-by-step Verification</span>
-        <span class="tag t-blue">High Confidence Flagging</span>
+    <div class="ben-card ben-card-2">
+      <div class="ben-heading">Academic intelligence that has never existed before in education.</div>
+      <div class="ben-divider"></div>
+      <div class="ben-points">
+        <div class="ben-point"><div class="ben-icon">🧠</div><div class="ben-text">For the first time, schools know exactly why each student lost each mark — pinpointing whether it was a conceptual gap, a skipped step, a careless slip, or a recall failure.</div></div>
+        <div class="ben-point"><div class="ben-icon">📊</div><div class="ben-text">Class-level and school-level patterns surface automatically — giving teachers a new dataset to help every student improve surgically, not generically.</div></div>
+      </div>
+      <div class="ben-footer">The right help, for the right student, at the right time.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ SECTION 4: FREE TRIAL + WHY VIDYANETRA ══ -->
+<section id="trial-why">
+  <div class="two-col">
+
+    <div class="trial-card">
+      <div class="trial-label">Pricing</div>
+      <div class="trial-heading">Start for free. Test us. Evaluate us. Then fall in love with us.</div>
+      <div class="trial-divider"></div>
+      <div class="trial-items">
+        <div class="trial-item"><div class="trial-item-icon">📝</div>1 subject</div>
+        <div class="trial-item"><div class="trial-item-icon">📄</div>1 exam</div>
+        <div class="trial-item"><div class="trial-item-icon">🏫</div>1 class section</div>
+        <div class="trial-item"><div class="trial-item-icon">✅</div>Full evaluation, full analytics, full teacher review</div>
+      </div>
+      <div class="after-card">
+        <div class="after-heading">After the free trial</div>
+        <p class="after-text">Pricing is designed to be accessible for schools of all sizes — whether you have 100 students or 100,000. We work with each school individually to find a price that makes sense for you. Get in touch and we'll take it from there.</p>
+        <a class="cta-btn" href="#contact-faq">Get in touch →</a>
       </div>
     </div>
-  </div>
 
-  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div></div>
-
-  <div class="step s3">
-    <div class="step-left">
-      <div class="step-num">3</div>
-      <div class="step-emoji">✅</div>
+    <div class="why-card">
+      <div class="why-label">Why schools choose VidyaNetra</div>
+      <div class="why-heading">Faster evaluation. Deeper insight. Better outcomes.</div>
+      <div class="why-divider"></div>
+      <div class="why-stats">
+        <div class="why-stat"><div class="why-stat-icon">⚡</div><div class="why-stat-text"><b>75% reduction</b> in paper evaluation time for teachers</div></div>
+        <div class="why-stat"><div class="why-stat-icon">✅</div><div class="why-stat-text"><b>20–40% improvement</b> in consistency of marking</div></div>
+        <div class="why-stat"><div class="why-stat-icon">📋</div><div class="why-stat-text"><b>10x more structured feedback</b> available for students</div></div>
+        <div class="why-stat"><div class="why-stat-icon">🔍</div><div class="why-stat-text"><b>Earlier identification</b> of recurring learning gaps across a class</div></div>
+        <div class="why-stat"><div class="why-stat-icon">📊</div><div class="why-stat-text"><b>Faster academic review</b> through class-level and student-level analytics</div></div>
+        <div class="why-stat"><div class="why-stat-icon">🧠</div><div class="why-stat-text"><b>Better visibility</b> into why students lose marks across subjects and exams</div></div>
+      </div>
+      <div class="why-footer">Start with one class, one subject, one exam.</div>
     </div>
-    <div class="step-right">
-      <span class="step-label">Teacher Review</span>
-      <div class="step-title">Teachers Review, Adjust &amp; Approve</div>
-      <div class="step-desc">Teachers see the AI's evaluation with full reasoning for every criterion. They can <b>override any mark, add comments, and approve the final score</b> — in a fraction of the time manual correction takes. The teacher is always in control.</div>
-      <div class="tags">
-        <span class="tag t-green">Full AI Reasoning Visible</span>
-        <span class="tag t-green">One-click Override</span>
-        <span class="tag t-green">Teacher Comments</span>
-        <span class="tag t-green">Final Approval by Teacher</span>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══ SECTION 5: CONTACT + FAQS ══ -->
+<section id="contact-faq">
+  <div class="two-col">
+
+    <div class="contact-card">
+      <div class="contact-heading">Get in touch</div>
+      <p class="contact-sub">Interested in bringing VidyaNetra to your school? Fill in your details and we'll reach out within 24 hours.</p>
+      <div class="contact-divider"></div>
+      <form id="pilot-form" action="https://formspree.io/f/mojzobok" method="POST">
+        <div class="field">
+          <label for="name">Your name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" placeholder="e.g. Priya Sharma" required>
+        </div>
+        <div class="field">
+          <label for="school">School name <span class="req">*</span></label>
+          <input type="text" id="school" name="school" placeholder="e.g. St. Mary's School, Chennai" required>
+        </div>
+        <div class="field">
+          <label for="city">City <span class="req">*</span></label>
+          <input type="text" id="city" name="city" placeholder="e.g. Chennai" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone number</label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 98765 43210">
+        </div>
+        <div class="field">
+          <label for="email">Email address <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="e.g. principal@school.edu" required>
+        </div>
+        <div class="field">
+          <label for="message">Anything else? <span style="font-weight:400;color:#9ca3af">(optional)</span></label>
+          <textarea id="message" name="message" placeholder="e.g. We have 300 students across Classes 9 and 10…"></textarea>
+        </div>
+        <button class="submit-btn" type="submit">Contact us →</button>
+      </form>
+      <div class="success-msg" id="success-msg">Thank you! We'll reach out within 24 hours.</div>
+      <p class="form-note">Your information is only used to get in touch with you about VidyaNetra.</p>
+    </div>
+
+    <div class="faq-card">
+      <div class="faq-heading">Frequently asked questions</div>
+      <p class="faq-sub">Everything you need to know before getting started.</p>
+      <div class="faq-top-divider"></div>
+      <div class="faq-wrap">
+        <div class="faq-item">
+          <details>
+            <summary>Does VidyaNetra replace teachers?</summary>
+            <div class="faq-answer">No. Teachers remain fully in control at every step — they review, adjust, and approve every evaluation before it is finalised. VidyaNetra handles the time-consuming parts so teachers can focus on what matters.</div>
+          </details>
+        </div>
+        <div class="faq-item">
+          <details>
+            <summary>How accurate is the AI evaluation?</summary>
+            <div class="faq-answer">VidyaNetra achieves 80–85% accuracy on real student answer papers across subjects. Teachers review and correct the remaining cases in a fraction of the time full manual evaluation takes.</div>
+          </details>
+        </div>
+        <div class="faq-item">
+          <details>
+            <summary>What subjects does it support?</summary>
+            <div class="faq-answer">All major school subjects — Mathematics, Physics, Chemistry, Biology, Social Studies, and Languages. VidyaNetra handles both theory answers and numerical or derivation-based questions.</div>
+          </details>
+        </div>
+        <div class="faq-item">
+          <details>
+            <summary>How long does evaluation take?</summary>
+            <div class="faq-answer">A full class set of 40 answer papers is typically evaluated in under 10 minutes. The exact time depends on the number of questions and length of answers.</div>
+          </details>
+        </div>
+        <div class="faq-item">
+          <details>
+            <summary>What format do answer sheets need to be in?</summary>
+            <div class="faq-answer">Scanned PDFs or images (JPG/PNG). Any standard school scanner or smartphone scan works. VidyaNetra handles handwritten scripts, printed answer books, and mixed formats.</div>
+          </details>
+        </div>
+        <div class="faq-item">
+          <details>
+            <summary>Is student data secure?</summary>
+            <div class="faq-answer">Yes. All data is encrypted in transit and at rest. Student information is never shared with third parties and is used solely for evaluation within your school's account.</div>
+          </details>
+        </div>
+        <div class="faq-item">
+          <details>
+            <summary>How do we start the free trial?</summary>
+            <div class="faq-answer">Simply fill in the contact form and we'll set everything up for you — one subject, one exam, one class section, completely free. No credit card, no commitment.</div>
+          </details>
+        </div>
+<div class="faq-item">
+          <details>
+            <summary>Does it work for board exam paper patterns?</summary>
+            <div class="faq-answer">Yes. VidyaNetra supports standard board exam formats including CBSE and state board patterns — across all mark weightages, question types, and subject structures.</div>
+          </details>
+        </div>
       </div>
     </div>
+
   </div>
+</section>
 
-  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+<!-- ── FOOTER ── -->
+<footer>
+  <span class="footer-copy">© 2026 VidyaNetra. All rights reserved.</span>
+  <span class="footer-tagline">Built for Indian schools.</span>
+</footer>
 
-  <div class="step s4">
-    <div class="step-left">
-      <div class="step-num">4</div>
-      <div class="step-emoji">📊</div>
-    </div>
-    <div class="step-right">
-      <span class="step-label">Analytics</span>
-      <div class="step-title">Intelligence That Has Never Existed Before</div>
-      <div class="step-desc">VidyaNetra generates performance insights at four levels — student, class, school, and inter-school. Know <b>exactly why each student lost each mark</b>, which units need reteaching, and how your school compares to peers — anonymously.</div>
-      <div class="tags">
-        <span class="tag t-orange">Student Cognitive Fingerprint</span>
-        <span class="tag t-orange">Class-level Heatmaps</span>
-        <span class="tag t-orange">Teaching Gap Detection</span>
-        <span class="tag t-orange">Inter-school Benchmarking</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="connector"><div class="conn-line"></div><div class="conn-arrow"></div></div>
-
-  <div class="outcome-inner">
-    <div class="outcome-tag">The Result</div>
-    <div class="outcome-title">Every Teacher Knows Exactly Where Every Student Needs Help</div>
-    <div class="outcome-sub">For the first time in the history of school education, teachers have access to criterion-level, error-typed, longitudinal performance data — for every student, every class, and the entire school.</div>
-    <div class="outcome-pills">
-      <span class="opill">📍 Student Level</span>
-      <span class="opill">🏫 Class Level</span>
-      <span class="opill">🏛️ School Level</span>
-      <span class="opill">🌐 Inter-School</span>
-    </div>
-  </div>
-
-</div>
-
-<div class="brand-footer">
-  <div class="brand-dot"></div>
-  <div class="brand-name">VidyaNetra · AI Powered Evaluation and Analytics</div>
-</div>
+<script>
+  const form = document.getElementById('pilot-form');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const data = new FormData(form);
+    const res = await fetch(form.action, {
+      method: 'POST', body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    }
+  });
+</script>
 
 </body>
 </html>
