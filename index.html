@@ -21,7 +21,7 @@
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid #f3f4f6;
-    padding: 0 64px;
+    padding: 0 max(64px, calc(50% - 620px));
     height: 60px;
     display: flex;
     align-items: center;
@@ -41,8 +41,8 @@
   .nav-cta:hover { background: #15803d; color: #fff !important; }
 
   /* ── LAYOUT ── */
-  section { padding: 80px 64px; }
-  .section-divider { height: 1px; background: #f3f4f6; margin: 0 64px; }
+  section { padding: 80px max(64px, calc(50% - 620px)); }
+  .section-divider { height: 1px; background: #f3f4f6; margin: 0 max(64px, calc(50% - 620px)); }
   .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
