@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VidyaNetra — A Dual Revolution in Education</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 48px 32px;
+  }
+
+  .section-heading {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1f36;
+    text-align: center;
+    margin-bottom: 36px;
+    line-height: 1.3;
+  }
+
+  .wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 860px;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .card {
+    border-radius: 16px;
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .card-1 { background: #f5f7ff; border: 1.5px solid #dde3f8; }
+  .card-2 { background: #f3faf5; border: 1.5px solid #d4edd9; }
+
+  .card-heading {
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: #1a1f36;
+    flex-shrink: 0;
+  }
+
+  .divider { height: 1.5px; border-radius: 2px; flex-shrink: 0; }
+  .card-1 .divider { background: #dde3f8; }
+  .card-2 .divider { background: #d4edd9; }
+
+  .points { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+  .point { display: flex; gap: 12px; align-items: flex-start; }
+  .point-icon { font-size: 15px; margin-top: 2px; flex-shrink: 0; }
+  .point-text { font-size: 14px; line-height: 1.7; color: #3d4461; }
+  .card-2 .point-text { color: #2d4a38; }
+
+  .card-footer {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 14px;
+    border-radius: 8px;
+    line-height: 1.5;
+    flex-shrink: 0;
+  }
+  .card-1 .card-footer { background: #eaedfa; color: #4a57a8; }
+  .card-2 .card-footer { background: #e3f2e8; color: #2d6b45; }
+</style>
+</head>
+<body>
+
+  <div class="section-heading">A Dual Revolution in Education.</div>
+
+  <div class="wrapper">
+
+    <div class="card card-1">
+      <div class="card-heading">Evaluation time drops from entire weekends to a few minutes.</div>
+      <div class="divider"></div>
+      <div class="points">
+        <div class="point">
+          <div class="point-icon">⚡</div>
+          <div class="point-text">Hundreds of answer scripts evaluated in minutes — with full, criterion-level reasoning for every single answer.</div>
+        </div>
+        <div class="point">
+          <div class="point-icon">✅</div>
+          <div class="point-text">Teachers review, adjust, and approve marks — staying fully in control while spending a fraction of the time they used to.</div>
+        </div>
+        <div class="point">
+          <div class="point-icon">🗓️</div>
+          <div class="point-text">What once consumed entire teacher weekends now completes before the next period begins.</div>
+        </div>
+      </div>
+      <div class="card-footer">Less time correcting. More time teaching.</div>
+    </div>
+
+    <div class="card card-2">
+      <div class="card-heading">Academic intelligence that has never existed before in education.</div>
+      <div class="divider"></div>
+      <div class="points">
+        <div class="point">
+          <div class="point-icon">🧠</div>
+          <div class="point-text">For the first time, schools know exactly why each student lost each mark — pinpointing whether it was a conceptual gap, a skipped step, a careless slip, or a recall failure.</div>
+        </div>
+        <div class="point">
+          <div class="point-icon">📊</div>
+          <div class="point-text">Class-level and school-level patterns surface automatically — with targeted suggestions for surgical coaching, unit-level reteaching, and board exam intervention.</div>
+        </div>
+      </div>
+      <div class="card-footer">The right help, for the right student, at the right time.</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
