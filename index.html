@@ -314,11 +314,69 @@
 
   /* ── FOOTER ── */
   footer {
-    border-top: 1px solid #f3f4f6; padding: 28px 64px;
+    background: #7f1d1d; border-top: none; padding: 28px 64px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .footer-copy { font-size: 12px; color: #9ca3af; }
-  .footer-tagline { font-size: 12px; color: #9ca3af; }
+  .footer-copy { font-size: 24px; color: rgba(255,255,255,0.8); font-weight: 500; }
+  .footer-tagline { font-size: 24px; color: rgba(255,255,255,0.65); }
+
+  /* ── NAV DEMO BTN ── */
+  .nav-demo-btn {
+    background: #2463EB; color: #fff; border: none; border-radius: 8px;
+    padding: 8px 16px; font-size: 14px; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: background 0.15s;
+  }
+  .nav-demo-btn:hover { background: #1d4ed8; }
+
+  /* ── DEMO MODAL ── */
+  .demo-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 1000; align-items: center; justify-content: center;
+  }
+  .demo-modal-overlay.open { display: flex; }
+  .demo-modal {
+    background: #fff; border-radius: 16px; padding: 36px 32px;
+    width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .demo-modal h2 { font-size: 20px; font-weight: 900; color: #111827; margin-bottom: 6px; }
+  .demo-modal p { font-size: 13px; color: #6b7280; margin-bottom: 20px; line-height: 1.6; }
+  .demo-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .demo-field label { font-size: 12px; font-weight: 600; color: #374151; }
+  .demo-field input {
+    border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 10px 12px;
+    font-size: 14px; outline: none; font-family: inherit;
+  }
+  .demo-field input:focus { border-color: #2463EB; }
+  .demo-error { font-size: 12px; color: #dc2626; margin-bottom: 10px; display: none; }
+  .demo-note { font-size: 12px; color: #6b7280; margin-top: 12px; text-align: center; }
+  .demo-note a { color: #2463EB; font-weight: 600; text-decoration: none; }
+  .demo-submit {
+    width: 100%; padding: 11px; background: #2463EB; color: #fff;
+    border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .demo-submit:hover { background: #1d4ed8; }
+  .demo-close { float: right; background: none; border: none; font-size: 20px; cursor: pointer; color: #9ca3af; }
+
+  /* ── UNDER CONSTRUCTION ── */
+  .demo-construction {
+    display: none; text-align: center; padding: 20px 0;
+  }
+  .demo-construction .const-icon { font-size: 48px; margin-bottom: 12px; }
+  .demo-construction h3 { font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 8px; }
+  .demo-construction p { font-size: 13px; color: #6b7280; line-height: 1.6; }
+
+  /* ── GLOW ANIMATIONS ── */
+  @keyframes glow-blue {
+    0%,100% { box-shadow: 0 0 0 0 rgba(36,99,235,0); }
+    50% { box-shadow: 0 0 0 8px rgba(36,99,235,0.25), 0 0 32px rgba(36,99,235,0.15); }
+  }
+  @keyframes glow-pink {
+    0%,100% { box-shadow: 0 0 0 0 rgba(236,72,153,0); }
+    50% { box-shadow: 0 0 0 8px rgba(236,72,153,0.25), 0 0 32px rgba(236,72,153,0.15); }
+  }
+  .glow-blue { animation: glow-blue 0.8s ease 3; }
+  .glow-pink { animation: glow-pink 0.8s ease 3; }
 </style>
 </head>
 <body>
@@ -338,8 +396,8 @@
     <li><a href="#how">How it works</a></li>
     <li><a href="#benefits">Benefits</a></li>
     <li><a href="#trial-why">Pricing</a></li>
-    <li><a href="#contact-faq">Contact</a></li>
     <li><a href="#contact-faq" class="nav-cta">Get in touch</a></li>
+    <li><button class="nav-demo-btn" onclick="openDemoModal()">Free Demo</button></li>
   </ul>
 </nav>
 
@@ -378,15 +436,15 @@
       <div class="step-circle sc1">1</div>
       <div class="step-card sc1-bg">
         <span class="step-card-label">Upload</span>
-        <div class="step-card-title">Upload the question paper, answer key & student scripts</div>
-        <div class="step-card-desc">Supports handwritten scripts, printed answer books, and mixed formats.</div>
+        <div class="step-card-title">Upload the question paper, answer key & student papers</div>
+        <div class="step-card-desc">Supports handwritten papers, printed answer books, and mixed formats.</div>
       </div>
     </div>
     <div class="flow-step">
       <div class="step-circle sc2">2</div>
       <div class="step-card sc2-bg">
         <span class="step-card-label">AI evaluation</span>
-        <div class="step-card-title">VidyaNetra evaluates hundreds of scripts in minutes</div>
+        <div class="step-card-title">VidyaNetra evaluates hundreds of papers in minutes</div>
         <div class="step-card-desc">Criterion by criterion. Every lost mark is explained, not just counted.</div>
       </div>
     </div>
@@ -421,11 +479,11 @@
       <div class="ben-heading">Evaluation time drops from entire weekends to a few minutes.</div>
       <div class="ben-divider"></div>
       <div class="ben-points">
-        <div class="ben-point"><div class="ben-icon">⚡</div><div class="ben-text">Hundreds of answer scripts evaluated in minutes — with full, criterion-level reasoning for every single answer.</div></div>
+        <div class="ben-point"><div class="ben-icon">⚡</div><div class="ben-text">Hundreds of answer papers evaluated in minutes — with full, criterion-level reasoning for every single answer.</div></div>
         <div class="ben-point"><div class="ben-icon">✅</div><div class="ben-text">Teachers review, adjust, and approve marks — staying fully in control while spending a fraction of the time.</div></div>
-        <div class="ben-point"><div class="ben-icon">🗓️</div><div class="ben-text">What once consumed entire teacher weekends now completes before the next period begins.</div></div>
+        <div class="ben-point"><div class="ben-icon">🗓️</div><div class="ben-text">What once consumed entire teacher weekends now takes only minutes.</div></div>
       </div>
-      <div class="ben-footer">Less time correcting. More time teaching.</div>
+      <div class="ben-footer">Less time evaluating. More time teaching.</div>
     </div>
     <div class="ben-card ben-card-2">
       <div class="ben-heading">Academic intelligence that has never existed before in education.</div>
@@ -518,7 +576,7 @@
         <div class="faq-item">
           <details>
             <summary>What format do answer sheets need to be in?</summary>
-            <div class="faq-answer">Scanned PDFs or images (JPG/PNG). Any standard school scanner or smartphone scan works. VidyaNetra handles handwritten scripts, printed answer books, and mixed formats.</div>
+            <div class="faq-answer">Scanned PDFs or images (JPG/PNG). Any standard school scanner or smartphone scan works. VidyaNetra handles handwritten papers, printed answer books, and mixed formats.</div>
           </details>
         </div>
         <div class="faq-item">
@@ -586,7 +644,97 @@
   <span class="footer-tagline">vidyanetra.org &nbsp;|&nbsp; ceo@vidyanetra.org</span>
 </footer>
 
+<!-- ── DEMO MODAL ── -->
+<div class="demo-modal-overlay" id="demoModal">
+  <div class="demo-modal">
+    <button class="demo-close" onclick="closeDemoModal()">✕</button>
+    <div id="demo-login-view">
+      <h2>Free Demo Access</h2>
+      <p>Enter your credentials to access the VidyaNetra demo. Don't have access yet? <a href="#contact-faq" onclick="closeDemoModal();scrollToContact();">Get in touch</a> and we'll set you up.</p>
+      <div class="demo-field">
+        <label>Username</label>
+        <input type="text" id="demo-uid" placeholder="Enter username" autocomplete="off">
+      </div>
+      <div class="demo-field">
+        <label>Password</label>
+        <input type="password" id="demo-pwd" placeholder="Enter password">
+      </div>
+      <div class="demo-error" id="demo-error">Incorrect credentials. Please try again.</div>
+      <button class="demo-submit" onclick="submitDemo()">Enter Demo →</button>
+      <p class="demo-note">No account? <a href="#contact-faq" onclick="closeDemoModal();scrollToContact();">Contact us</a> to receive your credentials.</p>
+    </div>
+    <div class="demo-construction" id="demo-construction-view">
+      <div class="const-icon">🚧</div>
+      <h3>Demo Coming Soon</h3>
+      <p>We're putting the finishing touches on the VidyaNetra demo environment. Check back shortly or <a href="#contact-faq" onclick="closeDemoModal();scrollToContact();" style="color:#2463EB;font-weight:600;">get in touch</a> to schedule a live walkthrough.</p>
+    </div>
+  </div>
+</div>
+
 <script>
+  /* ── DEMO MODAL ── */
+  const DEMO_UID = 'vidyanetra';
+  const DEMO_PWD = 'demo2026';
+
+  function openDemoModal() {
+    document.getElementById('demoModal').classList.add('open');
+    document.getElementById('demo-login-view').style.display = 'block';
+    document.getElementById('demo-construction-view').style.display = 'none';
+    document.getElementById('demo-error').style.display = 'none';
+    document.getElementById('demo-uid').value = '';
+    document.getElementById('demo-pwd').value = '';
+  }
+  function closeDemoModal() {
+    document.getElementById('demoModal').classList.remove('open');
+  }
+  function submitDemo() {
+    const uid = document.getElementById('demo-uid').value.trim();
+    const pwd = document.getElementById('demo-pwd').value.trim();
+    if (uid === DEMO_UID && pwd === DEMO_PWD) {
+      document.getElementById('demo-login-view').style.display = 'none';
+      document.getElementById('demo-construction-view').style.display = 'block';
+    } else {
+      document.getElementById('demo-error').style.display = 'block';
+    }
+  }
+  document.getElementById('demoModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDemoModal();
+  });
+
+  /* ── GLOW ON SCROLL TO SECTION ── */
+  function triggerGlow(el, cls) {
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+    el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
+  }
+
+  function scrollToContact() {
+    setTimeout(() => {
+      const card = document.querySelector('.contact-card');
+      if (card) triggerGlow(card, 'glow-blue');
+    }, 600);
+  }
+
+  document.querySelectorAll('a[href="#contact-faq"]').forEach(link => {
+    link.addEventListener('click', () => {
+      setTimeout(() => {
+        const card = document.querySelector('.contact-card');
+        if (card) triggerGlow(card, 'glow-blue');
+      }, 600);
+    });
+  });
+
+  document.querySelectorAll('a[href="#trial-why"]').forEach(link => {
+    link.addEventListener('click', () => {
+      setTimeout(() => {
+        const card = document.querySelector('.trial-card');
+        if (card) triggerGlow(card, 'glow-pink');
+      }, 600);
+    });
+  });
+
+  /* ── CONTACT FORM ── */
   const form = document.getElementById('pilot-form');
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
