@@ -1248,10 +1248,17 @@ async function submitAll() {
       Array.from(sheets).forEach(f => fd.append('answerSheets', f));
     } else {
       const n = parseInt(document.getElementById('totalStudents').value) || 0;
+      const studentMeta = [];
       for (let i = 1; i <= n; i++) {
-        const inp = document.getElementById('st-file-' + i + '_real') || document.getElementById('st-file-' + i);
-        if (inp && inp.files && inp.files[0]) fd.append('answerSheets', inp.files[0]);
+        const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
+        const name = (document.getElementById('st-name-' + i)?.value || '').trim();
+        const inp  = document.getElementById('st-file-' + i + '_real') || document.getElementById('st-file-' + i);
+        if (inp && inp.files && inp.files[0]) {
+          fd.append('answerSheets', inp.files[0]);
+          studentMeta.push({ roll, name });
+        }
       }
+      fd.append('studentMeta', JSON.stringify(studentMeta));
     }
 
     const res = await fetch('/api/pilot/submit', { method: 'POST', body: fd });
