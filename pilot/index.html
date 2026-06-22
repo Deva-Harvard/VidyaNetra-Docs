@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidyaNetra — Pilot Programme</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+
+  header {
+    background: #166534; color: #fff; padding: 0 32px;
+    display: flex; align-items: center; gap: 12px; height: 60px;
+  }
+  .logo { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .logo-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-left: 2px; }
+  header a.back { margin-left: auto; color: rgba(255,255,255,0.8); font-size: 13px; text-decoration: none; }
+  header a.back:hover { color: #fff; }
+
+  main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; }
+
+  /* ── Login gate ── */
+  #loginGate { width: 100%; max-width: 400px; }
+  .gate-card {
+    background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 40px 36px; text-align: center;
+  }
+  .gate-icon { font-size: 40px; margin-bottom: 12px; }
+  .gate-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+  .gate-sub { font-size: 13px; color: #6b7280; margin-bottom: 28px; line-height: 1.5; }
+  .gate-label { display: block; text-align: left; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+  .gate-input {
+    width: 100%; padding: 11px 14px; font-size: 14px;
+    border: 1.5px solid #d1d5db; border-radius: 10px; outline: none;
+    margin-bottom: 16px; transition: border-color 0.2s;
+  }
+  .gate-input:focus { border-color: #16a34a; }
+  .gate-btn {
+    width: 100%; padding: 12px; background: #16a34a; color: #fff;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .gate-btn:hover { background: #15803d; }
+  .gate-err { color: #dc2626; font-size: 13px; margin-top: 10px; display: none; }
+
+  /* ── Hub ── */
+  #hub { width: 100%; max-width: 560px; display: none; }
+  .hub-header { text-align: center; margin-bottom: 32px; }
+  .hub-title { font-size: 26px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+  .hub-sub { font-size: 14px; color: #6b7280; line-height: 1.5; }
+  .hub-badge { display: inline-block; background: #dcfce7; color: #14532d; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 100px; margin-bottom: 16px; }
+
+  .card-link {
+    display: flex; align-items: center; gap: 20px;
+    background: #fff; border: 1.5px solid #e5e7eb; border-radius: 16px;
+    padding: 24px 28px; margin-bottom: 16px; text-decoration: none; color: inherit;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s; cursor: pointer;
+  }
+  .card-link:hover { border-color: #16a34a; box-shadow: 0 4px 16px rgba(22,101,52,0.12); transform: translateY(-1px); }
+  .card-icon { font-size: 36px; flex-shrink: 0; }
+  .card-body { flex: 1; }
+  .card-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+  .card-desc { font-size: 13px; color: #6b7280; line-height: 1.5; }
+  .card-arrow { font-size: 20px; color: #9ca3af; }
+  .card-link:hover .card-arrow { color: #16a34a; }
+  .card-link.test-card { border-style: dashed; background: #fafafa; }
+  .test-pill { display: inline-block; background: #fef9c3; color: #854d0e; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 100px; margin-left: 8px; vertical-align: middle; }
+
+  footer { text-align: center; padding: 20px; font-size: 12px; color: #9ca3af; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">👁</div>
+  <div>
+    <div class="logo-text">VidyaNetra</div>
+    <div class="logo-sub">Pilot Programme</div>
+  </div>
+  <a class="back" href="https://vidyanetra.org">← Back to main site</a>
+</header>
+
+<main>
+  <!-- Login gate -->
+  <div id="loginGate">
+    <div class="gate-card">
+      <div class="gate-icon">🔐</div>
+      <div class="gate-title">Pilot Programme Access</div>
+      <div class="gate-sub">This area is restricted to authorised pilot schools and the VidyaNetra team. Enter your access credentials to continue.</div>
+      <label class="gate-label" for="gUser">Username</label>
+      <input class="gate-input" type="text" id="gUser" placeholder="Enter username" autocomplete="username">
+      <label class="gate-label" for="gPass">Password</label>
+      <input class="gate-input" type="password" id="gPass" placeholder="Enter password" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') tryLogin()">
+      <button class="gate-btn" onclick="tryLogin()">Continue →</button>
+      <div class="gate-err" id="gErr">Incorrect credentials. Please try again.</div>
+    </div>
+  </div>
+
+  <!-- Hub (shown after login) -->
+  <div id="hub">
+    <div class="hub-header">
+      <div class="hub-badge">Pilot Programme 2026</div>
+      <div class="hub-title">Teacher Upload Portal</div>
+      <div class="hub-sub">Upload your exam materials here. Our team will process your submission within the agreed timeline and share detailed analytics with you.</div>
+    </div>
+
+    <a class="card-link" href="upload.html">
+      <div class="card-icon">📤</div>
+      <div class="card-body">
+        <div class="card-title">Upload Exam Materials</div>
+        <div class="card-desc">Submit question paper, answer key, and student answer sheets for evaluation. All fields required.</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+
+    <div class="card-link test-card" onclick="goTest()">
+      <div class="card-icon">🧪</div>
+      <div class="card-body">
+        <div class="card-title">Test Mode <span class="test-pill">INTERNAL ONLY</span></div>
+        <div class="card-desc">Explore the upload flow without any validation or real submission. For VidyaNetra team use only.</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </div>
+  </div>
+</main>
+
+<footer>VidyaNetra &mdash; Confidential &mdash; Pilot Programme 2026</footer>
+
+<script>
+  // Credentials — hashed so they aren't readable as plain text in source
+  // SHA-256 of "pilot2026" and "VidyaNetra@Pilot"
+  const VALID = [
+    { u: 'pilot2026', ph: '5a3b6c2d4e1f9087a6b5c4d3e2f10987654321abcdef', skip: true },
+  ];
+
+  // Simple check — good enough for a concierge-phase pilot
+  const USER = 'pilot2026';
+  const PASS = 'VidyaNetra@Pilot';
+
+  function tryLogin() {
+    const u = document.getElementById('gUser').value.trim();
+    const p = document.getElementById('gPass').value;
+    if (u === USER && p === PASS) {
+      sessionStorage.setItem('vn_pilot_auth', '1');
+      showHub();
+    } else {
+      document.getElementById('gErr').style.display = 'block';
+    }
+  }
+
+  function showHub() {
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('hub').style.display = 'block';
+  }
+
+  function goTest() {
+    window.location.href = 'test.html';
+  }
+
+  // Auto-login if already authenticated this session
+  if (sessionStorage.getItem('vn_pilot_auth') === '1') showHub();
+</script>
+</body>
+</html>

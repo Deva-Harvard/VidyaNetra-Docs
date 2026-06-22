@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidyaNetra — Teacher Upload Portal</title>
+<!-- SheetJS for Excel/CSV parsing -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #16a34a;
+    --green-dark: #14532d;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .logo-eye {
+    width: 36px; height: 36px;
+    background: #4ade80;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .logo-text { color: white; font-size: 20px; font-weight: 700; }
+  .logo-sub  { color: #bbf7d0; font-size: 12px; margin-top: 1px; }
+  .header-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    color: #dcfce7;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  /* ── Stepper ── */
+  .stepper-wrap {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+  }
+  .stepper {
+    display: flex;
+    align-items: center;
+    max-width: 860px;
+    margin: 0 auto;
+    gap: 0;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin: 0 8px;
+    transition: background 0.3s;
+  }
+  .step.done:not(:last-child)::after { background: var(--green); }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .step.active .step-num {
+    background: var(--green); border-color: var(--green); color: white;
+  }
+  .step.done .step-num {
+    background: var(--green); border-color: var(--green); color: white;
+  }
+  .step-label { font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  .step.active .step-label, .step.done .step-label { color: var(--green-dark); }
+
+  /* ── Main ── */
+  main {
+    max-width: 860px;
+    margin: 32px auto;
+    padding: 0 24px 60px;
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title {
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .page-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 15px; font-weight: 700;
+    color: var(--green-dark);
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title svg { width: 18px; height: 18px; color: var(--green); }
+
+  /* ── Form ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full { grid-column: 1 / -1; }
+  label {
+    font-size: 13px; font-weight: 600; color: #374151;
+  }
+  label .req { color: var(--red); margin-left: 2px; }
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+  }
+  input.err, select.err, textarea.err {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.08);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  .hint { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .field-err { font-size: 11.5px; color: var(--red); margin-top: 2px; display: none; }
+  .field-err.show { display: block; }
+
+  /* ── Upload zone ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg);
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--green); background: var(--green-light); }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-label { font-size: 14px; font-weight: 600; color: var(--text); }
+  .upload-hint  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .upload-file-name {
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-light);
+    border: 1px solid var(--green-border);
+    color: var(--green-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 100px;
+  }
+  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* ── Upload method toggle ── */
+  .method-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .method-card {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .method-card:hover { border-color: var(--green); background: var(--green-light); }
+  .method-card.selected { border-color: var(--green); background: var(--green-light); }
+  .method-card .method-icon { font-size: 28px; margin-bottom: 8px; }
+  .method-card .method-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .method-card .method-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* ── Student table ── */
+  .student-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .student-table th {
+    background: var(--bg);
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .student-table td {
+    padding: 8px 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .student-table tr:last-child td { border-bottom: none; }
+  .student-table input[type="text"] { padding: 7px 10px; font-size: 13px; }
+  .file-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    background: white;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .file-upload-btn:hover { border-color: var(--green); color: var(--green); }
+  .file-upload-btn.has-file { border-color: var(--green); color: var(--green-dark); background: var(--green-light); }
+  .file-upload-btn input { display: none; }
+  .row-num {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+    text-align: center;
+    width: 36px;
+  }
+
+  /* ── Roster upload ── */
+  .roster-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg);
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .roster-upload-zone:hover, .roster-upload-zone.drag { border-color: var(--green); background: var(--green-light); }
+  .roster-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .template-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; color: var(--green); font-weight: 600;
+    text-decoration: none; margin-top: 10px;
+    cursor: pointer;
+  }
+  .template-link:hover { text-decoration: underline; }
+  /* Confirm table */
+  .confirm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .confirm-table th {
+    background: var(--bg); font-weight: 700; text-align: left;
+    padding: 9px 12px; border-bottom: 2px solid var(--border);
+    color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .confirm-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .confirm-table tr:last-child td { border-bottom: none; }
+  .confirm-table input[type="text"] { padding: 5px 8px; font-size: 13px; width: 100%; }
+  .confirm-table .del-btn {
+    background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 16px; padding: 2px 6px; border-radius: 4px;
+  }
+  .confirm-table .del-btn:hover { color: var(--red); background: var(--red-bg); }
+  .confirm-status {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 14px; font-size: 13px;
+  }
+  .badge-ok  { background: #dcfce7; color: #14532d; padding: 3px 10px; border-radius: 100px; font-weight: 700; font-size: 12px; }
+  .badge-warn{ background: #fef9c3; color: #854d0e; padding: 3px 10px; border-radius: 100px; font-weight: 700; font-size: 12px; }
+  .badge-err { background: var(--red-bg); color: var(--red); padding: 3px 10px; border-radius: 100px; font-weight: 700; font-size: 12px; }
+  .row-num { font-size: 12px; color: var(--muted); font-weight: 700; text-align: center; width: 36px; }
+
+  /* ── Buttons ── */
+  .btn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--green);
+    color: white;
+  }
+  .btn-primary:hover { background: #15803d; }
+  .btn-secondary {
+    background: white;
+    color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: #9ca3af; }
+  .btn-submit {
+    background: linear-gradient(135deg, #14532d, #15803d);
+    color: white;
+    padding: 13px 32px;
+    font-size: 15px;
+  }
+  .btn-submit:hover { opacity: 0.9; }
+
+  /* ── Success page ── */
+  .success-card {
+    text-align: center;
+    padding: 60px 40px;
+    background: white;
+    border: 1px solid var(--green-border);
+    border-radius: 20px;
+  }
+  .success-icon { font-size: 56px; margin-bottom: 16px; }
+  .success-title { font-size: 24px; font-weight: 800; color: var(--green-dark); margin-bottom: 8px; }
+  .success-sub { font-size: 14px; color: var(--muted); max-width: 400px; margin: 0 auto; line-height: 1.6; }
+  .ref-box {
+    display: inline-block;
+    margin-top: 20px;
+    background: var(--green-light);
+    border: 1px solid var(--green-border);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green-dark);
+  }
+
+  /* ── Info banner ── */
+  .info-banner {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--amber-bg);
+    border: 1px solid #fcd34d;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #92400e;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 620px) {
+    .grid-2, .grid-3, .upload-grid { grid-template-columns: 1fr; }
+    .method-toggle { grid-template-columns: 1fr; }
+    .stepper { gap: 4px; }
+    .step-label { display: none; }
+    main { padding: 0 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-eye">👁</div>
+  <div>
+    <div class="logo-text">VidyaNetra</div>
+    <div class="logo-sub">Teacher Upload Portal</div>
+  </div>
+  <div class="header-badge" style="background:#fef08a;color:#713f12;border:1px solid #fde047">🧪 TEST MODE — No validation</div>
+</header>
+<div style="background:#fef9c3;border-bottom:2px solid #fde047;text-align:center;padding:8px 16px;font-size:13px;font-weight:600;color:#713f12">
+  TEST VERSION — All fields optional. Skip through freely. Do not share with teachers.
+</div>
+
+<div class="stepper-wrap">
+  <div class="stepper">
+    <div class="step active" id="s1">
+      <div class="step-num">1</div>
+      <span class="step-label">School &amp; Exam Details</span>
+    </div>
+    <div class="step" id="s2">
+      <div class="step-num">2</div>
+      <span class="step-label">Upload Documents</span>
+    </div>
+    <div class="step" id="s3">
+      <div class="step-num">3</div>
+      <span class="step-label">Student Answer Sheets</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════════ PAGE 1 ══════════════════ -->
+  <div class="page active" id="page1">
+    <div class="page-title">School &amp; Exam Details</div>
+    <div class="page-subtitle">Fill in your school information and exam details before uploading.</div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        School Information
+      </div>
+      <div class="grid-2" style="gap:16px">
+        <div class="field full">
+          <label>School name <span class="req">*</span></label>
+          <input type="text" id="schoolName" placeholder="e.g. Sri Vidya Mandir Hr. Sec. School" />
+          <div class="field-err" id="err-schoolName">Required</div>
+        </div>
+        <div class="field full">
+          <label>School address <span class="req">*</span></label>
+          <input type="text" id="schoolAddress" placeholder="Street, area, landmark" />
+          <div class="field-err" id="err-schoolAddress">Required</div>
+        </div>
+        <div class="field">
+          <label>City <span class="req">*</span></label>
+          <input type="text" id="city" placeholder="e.g. Chennai" />
+          <div class="field-err" id="err-city">Required</div>
+        </div>
+        <div class="field">
+          <label>Pin code <span class="req">*</span></label>
+          <input type="text" id="pinCode" placeholder="6-digit pin" maxlength="6" />
+          <div class="field-err" id="err-pinCode">Enter a valid 6-digit pin code</div>
+        </div>
+        <div class="field">
+          <label>Email ID <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="teacher@school.edu.in" />
+          <div class="field-err" id="err-email">Enter a valid email address</div>
+        </div>
+        <div class="field">
+          <label>Phone number <span class="req">*</span></label>
+          <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" />
+          <div class="field-err" id="err-phone">Enter a valid 10-digit number</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Exam Details
+      </div>
+      <div style="display:grid;gap:16px">
+        <div class="field">
+          <label>Exam name <span class="req">*</span></label>
+          <select id="examName">
+            <option value="">Select exam type</option>
+            <option>1st Mid term</option>
+            <option>2nd Mid term</option>
+            <option>3rd Mid term</option>
+            <option>Quarterly</option>
+            <option>Half yearly</option>
+            <option>Annual</option>
+            <option>Class test 1</option>
+            <option>Class test 2</option>
+            <option>Class test 3</option>
+            <option>Class test 4</option>
+            <option>Class test 5</option>
+            <option>Class test 6</option>
+          </select>
+          <div class="field-err" id="err-examName">Required</div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Class / grade <span class="req">*</span></label>
+            <select id="classGrade">
+              <option value="">Select class</option>
+              <option>Class 01</option><option>Class 02</option><option>Class 03</option>
+              <option>Class 04</option><option>Class 05</option><option>Class 06</option>
+              <option>Class 07</option><option>Class 08</option><option>Class 09</option>
+              <option>Class 10</option><option>Class 11</option><option>Class 12</option>
+            </select>
+            <div class="field-err" id="err-classGrade">Required</div>
+          </div>
+          <div class="field">
+            <label>Section <span class="req">*</span></label>
+            <select id="section">
+              <option value="">Select section</option>
+              <option>Section A</option><option>Section B</option><option>Section C</option>
+              <option>Section D</option><option>Section E</option><option>Section F</option>
+              <option>Section G</option><option>Section H</option>
+            </select>
+            <div class="field-err" id="err-section">Required</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Subject <span class="req">*</span></label>
+            <input type="text" id="subject" placeholder="e.g. Mathematics" />
+            <div class="field-err" id="err-subject">Required</div>
+          </div>
+          <div class="field">
+            <label>Exam date <span class="req">*</span></label>
+            <input type="date" id="examDate" />
+            <div class="field-err" id="err-examDate">Required</div>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label>Maximum marks <span class="req">*</span></label>
+            <input type="number" id="maxMarks" placeholder="e.g. 100" min="1" />
+            <div class="field-err" id="err-maxMarks">Required</div>
+          </div>
+          <div class="field">
+            <label>Pass mark <span class="req">*</span></label>
+            <input type="number" id="failMarks" placeholder="e.g. 35" min="0" />
+            <div class="field-err" id="err-failMarks">Must be less than max marks</div>
+          </div>
+          <div class="field">
+            <label>Total students <span class="req">*</span></label>
+            <input type="number" id="totalStudents" placeholder="e.g. 40" min="1" max="200" />
+            <div class="field-err" id="err-totalStudents">Enter a valid number (1–200)</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Syllabus chapters / units <span class="req">*</span></label>
+          <textarea id="syllabusChapters" placeholder="e.g.&#10;Chapter 1: Real Numbers&#10;Chapter 2: Polynomials&#10;Chapter 3: Linear Equations"></textarea>
+          <div class="hint">One chapter / unit per line. Helps VidyaNetra tie evaluation to the correct textbook content.</div>
+          <div class="field-err" id="err-syllabusChapters">Required</div>
+        </div>
+        <div class="field">
+          <label>Syllabus notes <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input type="text" id="syllabusNotes" placeholder="e.g. Samacheer 2025, Term 2" />
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <div></div>
+      <button class="btn btn-primary" onclick="goPage(2)">
+        Next: Upload Documents →
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ PAGE 2 ══════════════════ -->
+  <div class="page" id="page2">
+    <div class="page-title">Upload Documents</div>
+    <div class="page-subtitle">Upload the question paper and answer key for this exam. PDF or JPG accepted.</div>
+
+    <div class="card">
+      <div class="upload-grid">
+        <div>
+          <div class="card-title" style="border:none;margin-bottom:12px;padding-bottom:0">
+            📄 Question Paper <span class="req" style="color:var(--red)">*</span>
+          </div>
+          <div class="upload-zone" id="qpZone" ondragover="dragOver(event,'qpZone')" ondragleave="dragLeave('qpZone')" ondrop="dropFile(event,'qpFile','qpZone','qpLabel')">
+            <input type="file" id="qpFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('qpFile','qpLabel','qpZone')">
+            <div class="upload-icon">📑</div>
+            <div class="upload-label">Click or drag to upload</div>
+            <div class="upload-hint">PDF, JPG, PNG — max 20 MB</div>
+            <div class="upload-file-name" id="qpLabel" style="display:none"></div>
+          </div>
+          <div class="field-err" id="err-qpFile" style="margin-top:6px">Question paper is required</div>
+        </div>
+        <div>
+          <div class="card-title" style="border:none;margin-bottom:12px;padding-bottom:0">
+            🔑 Answer Key <span class="req" style="color:var(--red)">*</span>
+          </div>
+          <div class="upload-zone" id="akZone" ondragover="dragOver(event,'akZone')" ondragleave="dragLeave('akZone')" ondrop="dropFile(event,'akFile','akZone','akLabel')">
+            <input type="file" id="akFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('akFile','akLabel','akZone')">
+            <div class="upload-icon">📋</div>
+            <div class="upload-label">Click or drag to upload</div>
+            <div class="upload-hint">PDF, JPG, PNG — max 20 MB</div>
+            <div class="upload-file-name" id="akLabel" style="display:none"></div>
+          </div>
+          <div class="field-err" id="err-akFile" style="margin-top:6px">Answer key is required</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goPage(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goPage(3)">Next: Student Sheets →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ PAGE 3 ══════════════════ -->
+  <div class="page" id="page3">
+    <div class="page-title">Student Answer Sheets</div>
+    <div class="page-subtitle" id="p3subtitle">Upload answer sheets for all <strong id="p3count">—</strong> students.</div>
+
+    <div class="method-toggle">
+      <div class="method-card selected" id="mc-bulk" onclick="setMethod('bulk')">
+        <div class="method-icon">📦</div>
+        <div class="method-name">Bulk Upload</div>
+        <div class="method-desc">Upload all sheets at once as multiple files or a single PDF</div>
+      </div>
+      <div class="method-card" id="mc-single" onclick="setMethod('single')">
+        <div class="method-icon">👤</div>
+        <div class="method-name">Student by Student</div>
+        <div class="method-desc">Upload one sheet per student — fill name and roll number for each</div>
+      </div>
+    </div>
+
+    <!-- Bulk upload panel -->
+    <div id="panel-bulk">
+      <div class="card">
+        <div class="card-title">📦 Bulk Upload — Answer Sheets</div>
+        <div class="upload-zone" id="bulkZone" style="margin-bottom:8px" ondragover="dragOver(event,'bulkZone')" ondragleave="dragLeave('bulkZone')" ondrop="dropBulk(event)">
+          <input type="file" id="bulkFiles" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="bulkSelected()">
+          <div class="upload-icon">📂</div>
+          <div class="upload-label">Click or drag to upload answer sheets</div>
+          <div class="upload-hint">Select multiple files — PDF, JPG, PNG</div>
+        </div>
+        <div id="bulkFileList" style="margin-top:8px;font-size:13px;color:var(--green-dark)"></div>
+        <div class="field-err" id="err-bulkFiles" style="margin-top:6px">Please upload at least one answer sheet</div>
+      </div>
+
+      <div class="card" id="rosterCard">
+        <div class="card-title">📋 Student Roster <span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:4px">— upload a file with names &amp; roll numbers</span></div>
+
+        <!-- Step A: upload -->
+        <div id="rosterUploadStep">
+          <div class="info-banner">
+            Upload your class list as an <strong>Excel (.xlsx/.xls)</strong>, <strong>CSV</strong>, or <strong>PDF</strong>.
+            The file must have columns for <em>Roll Number</em> and <em>Student Name</em> (any column order).
+          </div>
+          <div class="roster-upload-zone" id="rosterZone"
+               ondragover="dragOver(event,'rosterZone')" ondragleave="dragLeave('rosterZone')"
+               ondrop="dropRoster(event)">
+            <input type="file" id="rosterFile" accept=".xlsx,.xls,.csv,.pdf"
+                   onchange="rosterFileSelected()">
+            <div style="font-size:28px;margin-bottom:8px">📋</div>
+            <div style="font-size:14px;font-weight:600">Click or drag to upload class list</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">Excel, CSV or PDF — max 5 MB</div>
+          </div>
+          <div style="text-align:center">
+            <span class="template-link" onclick="downloadTemplate()">&#11015; Download CSV template</span>
+          </div>
+          <div class="field-err" id="err-rosterFile" style="margin-top:8px">Please upload a student roster file</div>
+          <div id="rosterParseErr" class="info-banner" style="display:none;border-color:#fca5a5;background:#fef2f2;color:#7f1d1d;margin-top:10px"></div>
+        </div>
+
+        <!-- Step B: confirm extracted data -->
+        <div id="rosterConfirmStep" style="display:none">
+          <div class="confirm-status" id="rosterStatus"></div>
+          <div style="overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin-bottom:12px">
+            <table class="confirm-table">
+              <thead>
+                <tr>
+                  <th style="width:36px">#</th>
+                  <th style="width:140px">Roll number</th>
+                  <th>Student name</th>
+                  <th style="width:40px"></th>
+                </tr>
+              </thead>
+              <tbody id="rosterConfirmBody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-primary" style="font-size:13px;padding:9px 20px" onclick="confirmRoster()">&#10003; Confirm roster</button>
+            <button class="btn btn-secondary" style="font-size:13px;padding:9px 16px" onclick="resetRoster()">&#8617; Re-upload</button>
+            <button class="btn btn-secondary" style="font-size:13px;padding:9px 16px" onclick="addRosterRow()">+ Add row</button>
+          </div>
+          <div class="field-err" id="err-rosterConfirm" style="margin-top:8px">Fix all empty cells before confirming</div>
+        </div>
+
+        <!-- Step C: confirmed -->
+        <div id="rosterDoneStep" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <span class="badge-ok" id="rosterDoneBadge">&#10003; 0 students confirmed</span>
+            <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px" onclick="resetRoster()">Edit roster</button>
+          </div>
+          <div style="overflow-x:auto;max-height:260px;border:1px solid var(--border);border-radius:10px">
+            <table class="confirm-table">
+              <thead><tr><th style="width:36px">#</th><th style="width:140px">Roll number</th><th>Student name</th></tr></thead>
+              <tbody id="rosterDoneBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="field-err" id="err-roster" style="margin-top:8px">Student roster is required — upload and confirm the class list</div>
+      </div>
+    </div>
+
+    <!-- Student-by-student panel -->
+    <div id="panel-single" style="display:none">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:20px 24px;border-bottom:1px solid var(--border)">
+          <div class="card-title" style="border:none;padding:0;margin:0">👤 Student Answer Sheets</div>
+          <div class="info-banner" style="margin-top:12px;margin-bottom:0">
+            ⚠️ All <strong id="singleCount">—</strong> rows are mandatory. Upload one answer sheet per student.
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="student-table" id="studentTable">
+            <thead>
+              <tr>
+                <th class="row-num">#</th>
+                <th style="width:140px">Roll number <span style="color:var(--red)">*</span></th>
+                <th>Student name <span style="color:var(--red)">*</span></th>
+                <th style="width:180px">Answer sheet <span style="color:var(--red)">*</span></th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody"></tbody>
+          </table>
+        </div>
+        <div style="padding:8px 24px 16px">
+          <div class="field-err" id="err-studentTable">All rows must be complete — fill name, roll number, and upload a file for each student</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation checkbox -->
+    <div class="card" style="margin-top:16px">
+      <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:13px;line-height:1.5">
+        <input type="checkbox" id="confirmCheckbox" style="margin-top:3px;width:16px;height:16px;flex-shrink:0;accent-color:var(--green)">
+        <span>I confirm that the uploaded question paper, answer key, and student answer sheets all belong to the same exam and are complete.</span>
+      </label>
+      <div class="field-err" id="err-confirm" style="margin-top:8px">Please confirm before submitting</div>
+    </div>
+
+    <!-- Processing expectation -->
+    <div class="info-banner" style="margin-top:12px;background:#f0fdf4;border-color:#86efac;color:#14532d">
+      ⏱ <strong>Estimated processing time: as communicated during the pilot programme.</strong>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goPage(2)">← Back</button>
+      <button class="btn btn-submit" onclick="submitAll()">Submit for Evaluation</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ SUCCESS ══════════════════ -->
+  <div class="page" id="page4">
+    <div class="success-card">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Upload Complete!</div>
+      <div class="success-sub">
+        Your exam has been submitted for VidyaNetra processing.
+        Our team will process the evaluation and share the analytics dashboard with you by email within 24 hours.
+      </div>
+      <div class="ref-box">Reference ID: <span id="refId">—</span></div>
+      <div style="margin-top:28px">
+        <button class="btn btn-secondary" onclick="resetForm()" style="margin:0 auto">Submit another exam</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let currentPage = 1;
+let uploadMethod = 'bulk';
+
+// ── Page navigation ────────────────────────────────────────────────────────
+function goPage(n) {
+  if (n > currentPage && !validatePage(currentPage)) return;
+  if (n === 3) buildPage3();
+  currentPage = n;
+  document.querySelectorAll('.page').forEach((p, i) => {
+    p.classList.toggle('active', i + 1 === n);
+  });
+  [1,2,3].forEach(i => {
+    const s = document.getElementById('s' + i);
+    s.classList.remove('active','done');
+    if (i < n) s.classList.add('done');
+    if (i === n) s.classList.add('active');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Validation ─────────────────────────────────────────────────────────────
+function req(id) { return document.getElementById(id); }
+function setErr(id, msg, show) {
+  const el = document.getElementById('err-' + id);
+  if (el) { el.textContent = msg || el.textContent; el.classList.toggle('show', show); }
+  const inp = document.getElementById(id);
+  if (inp) inp.classList.toggle('err', show);
+}
+function clearErr(id) { setErr(id, null, false); }
+
+function validatePage(n) {
+  if (n === 1) return validatePage1();
+  if (n === 2) return validatePage2();
+  if (n === 3) return validatePage3();
+  return true;
+}
+
+// ── TEST MODE: all validation bypassed ────────────────────────────────────
+function validatePage1() { return true; }
+function validatePage2() { return true; }
+function validatePage3() { return true; }
+function validateBulk()  { return true; }
+
+function validateSingle() {
+  const n = parseInt(req('totalStudents').value) || 0;
+  let ok = true;
+  for (let i = 1; i <= n; i++) {
+    const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
+    const name = (document.getElementById('st-name-' + i)?.value || '').trim();
+    const file = document.getElementById('st-file-' + i)?.files?.length > 0;
+    if (!roll || !name || !file) { ok = false; }
+  }
+  document.getElementById('err-studentTable').classList.toggle('show', !ok);
+  return ok;
+}
+
+// ── Upload zones ───────────────────────────────────────────────────────────
+function dragOver(e, zoneId) { e.preventDefault(); document.getElementById(zoneId).classList.add('drag'); }
+function dragLeave(zoneId) { document.getElementById(zoneId).classList.remove('drag'); }
+
+function fileSelected(inputId, labelId, zoneId) {
+  const file = document.getElementById(inputId).files[0];
+  if (!file) return;
+  const lbl = document.getElementById(labelId);
+  lbl.textContent = '✓ ' + file.name;
+  lbl.style.display = 'inline-flex';
+  document.getElementById(zoneId).classList.remove('drag');
+  clearErr(inputId);
+}
+
+function dropFile(e, inputId, zoneId, labelId) {
+  e.preventDefault();
+  const dt = e.dataTransfer;
+  const input = document.getElementById(inputId);
+  const file = dt.files[0];
+  if (!file) return;
+  const dT = new DataTransfer();
+  dT.items.add(file);
+  input.files = dT.files;
+  fileSelected(inputId, labelId, zoneId);
+}
+
+function bulkSelected() {
+  const files = document.getElementById('bulkFiles').files;
+  const list = document.getElementById('bulkFileList');
+  if (!files.length) { list.innerHTML = ''; return; }
+  list.innerHTML = '<strong>' + files.length + ' file(s) selected:</strong><br>' +
+    Array.from(files).map(f => '• ' + f.name).join('<br>');
+  document.getElementById('err-bulkFiles').classList.remove('show');
+}
+
+function dropBulk(e) {
+  e.preventDefault();
+  const input = document.getElementById('bulkFiles');
+  const dT = new DataTransfer();
+  Array.from(e.dataTransfer.files).forEach(f => dT.items.add(f));
+  input.files = dT.files;
+  bulkSelected();
+  document.getElementById('bulkZone').classList.remove('drag');
+}
+
+// ── Method toggle ──────────────────────────────────────────────────────────
+function setMethod(m) {
+  uploadMethod = m;
+  document.getElementById('mc-bulk').classList.toggle('selected', m === 'bulk');
+  document.getElementById('mc-single').classList.toggle('selected', m === 'single');
+  document.getElementById('panel-bulk').style.display   = m === 'bulk'   ? '' : 'none';
+  document.getElementById('panel-single').style.display = m === 'single' ? '' : 'none';
+}
+
+// ── Build page 3 ───────────────────────────────────────────────────────────
+function buildPage3() {
+  const n = parseInt(req('totalStudents').value) || 0;
+  document.getElementById('p3count').textContent = n;
+  document.getElementById('singleCount').textContent = n;
+
+  // Reset roster on page rebuild
+  resetRoster();
+
+  // Student table (single)
+  const tbody = document.getElementById('studentTableBody');
+  tbody.innerHTML = '';
+  for (let i = 1; i <= n; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="row-num">${i}</td>
+      <td><input type="text" id="st-roll-${i}" placeholder="Roll no." style="width:100%"></td>
+      <td><input type="text" id="st-name-${i}" placeholder="Student name" style="width:100%"></td>
+      <td>
+        <label class="file-upload-btn" id="st-btn-${i}">
+          📎 Choose file
+          <input type="file" id="st-file-${i}" accept=".pdf,.jpg,.jpeg,.png"
+            onchange="studentFileSelected(${i})">
+        </label>
+      </td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// ── Roster upload / extract / confirm ─────────────────────────────────────
+window._rosterConfirmed = false;
+window._rosterData = []; // [{roll, name}]
+
+function resetRoster() {
+  window._rosterConfirmed = false;
+  window._rosterData = [];
+  const fi = document.getElementById('rosterFile');
+  if (fi) fi.value = '';
+  document.getElementById('rosterParseErr').style.display = 'none';
+  document.getElementById('err-rosterFile').classList.remove('show');
+  document.getElementById('err-rosterConfirm').classList.remove('show');
+  document.getElementById('err-roster').classList.remove('show');
+  document.getElementById('rosterUploadStep').style.display = '';
+  document.getElementById('rosterConfirmStep').style.display = 'none';
+  document.getElementById('rosterDoneStep').style.display = 'none';
+}
+
+function dropRoster(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const inp = document.getElementById('rosterFile');
+  const dT = new DataTransfer(); dT.items.add(file); inp.files = dT.files;
+  document.getElementById('rosterZone').classList.remove('drag');
+  parseRosterFile(file);
+}
+
+function rosterFileSelected() {
+  const file = document.getElementById('rosterFile').files[0];
+  if (file) parseRosterFile(file);
+}
+
+function showRosterErr(msg) {
+  const el = document.getElementById('rosterParseErr');
+  el.textContent = msg;
+  el.style.display = '';
+}
+
+function guessColumns(headers) {
+  const rollIdx = headers.findIndex(h => /roll|no\b|number|rno|sr\b|sno/i.test(h));
+  const nameIdx = headers.findIndex(h => /name|student|pupil/i.test(h));
+  return { rollIdx, nameIdx };
+}
+
+function parseRosterFile(file) {
+  document.getElementById('rosterParseErr').style.display = 'none';
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if (ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = e => parseCSVText(e.target.result);
+    reader.readAsText(file);
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    if (typeof XLSX === 'undefined') { showRosterErr('Excel library not loaded — please use CSV instead.'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        parseRows(rows);
+      } catch(err) { showRosterErr('Could not read Excel file: ' + err.message); }
+    };
+    reader.readAsArrayBuffer(file);
+  } else if (ext === 'pdf') {
+    showRosterErr('PDF rosters cannot be parsed automatically in the browser. Please export your class list as CSV or Excel and upload that instead.');
+  } else {
+    showRosterErr('Unsupported file type. Please upload Excel (.xlsx/.xls) or CSV.');
+  }
+}
+
+function parseCSVText(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const rows = lines.map(l => l.split(',').map(c => c.replace(/^"|"$/g,'').trim()));
+  parseRows(rows);
+}
+
+function parseRows(rows) {
+  if (!rows || rows.length < 2) { showRosterErr('File appears empty or has only a header row.'); return; }
+  const headers = rows[0].map(h => String(h).trim());
+  const { rollIdx, nameIdx } = guessColumns(headers);
+  if (rollIdx === -1 || nameIdx === -1) {
+    showRosterErr(
+      'Could not find Roll Number and Student Name columns. ' +
+      'Detected headers: ' + headers.join(', ') + '. ' +
+      'Please ensure columns are labelled "Roll No" and "Student Name" (or similar).'
+    );
+    return;
+  }
+  const data = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const roll = String(row[rollIdx] || '').trim();
+    const name = String(row[nameIdx] || '').trim();
+    if (roll || name) data.push({ roll, name });
+  }
+  if (!data.length) { showRosterErr('No student rows found in the file.'); return; }
+  showRosterConfirm(data);
+}
+
+function showRosterConfirm(data) {
+  window._rosterData = data;
+  const tbody = document.getElementById('rosterConfirmBody');
+  tbody.innerHTML = '';
+  data.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    tr.id = 'rr-' + i;
+    tr.innerHTML = `
+      <td><span class="row-num">${i + 1}</span></td>
+      <td><input type="text" class="form-input" value="${escH(row.roll)}" oninput="updateRosterRow(${i},'roll',this.value)"></td>
+      <td><input type="text" class="form-input" value="${escH(row.name)}" oninput="updateRosterRow(${i},'name',this.value)"></td>
+      <td><button class="del-btn" onclick="deleteRosterRow(${i})" title="Remove">&#x2715;</button></td>`;
+    tbody.appendChild(tr);
+  });
+  updateRosterStatus();
+  document.getElementById('rosterUploadStep').style.display = 'none';
+  document.getElementById('rosterConfirmStep').style.display = '';
+}
+
+function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function updateRosterRow(i, field, val) {
+  if (window._rosterData[i]) window._rosterData[i][field] = val.trim();
+  updateRosterStatus();
+}
+
+function deleteRosterRow(i) {
+  window._rosterData.splice(i, 1);
+  showRosterConfirm(window._rosterData);
+}
+
+function addRosterRow() {
+  window._rosterData.push({ roll: '', name: '' });
+  showRosterConfirm(window._rosterData);
+  // focus last row roll input
+  setTimeout(() => {
+    const last = document.getElementById('rosterConfirmBody').lastElementChild;
+    if (last) last.querySelector('input').focus();
+  }, 50);
+}
+
+function updateRosterStatus() {
+  const n = parseInt(req('totalStudents').value) || 0;
+  const total = window._rosterData.length;
+  const empty = window._rosterData.filter(r => !r.roll || !r.name).length;
+  const st = document.getElementById('rosterStatus');
+  let html = '';
+  if (empty) html += `<span class="badge-warn">&#9888; ${empty} row(s) have empty cells</span>`;
+  else html += `<span class="badge-ok">&#10003; All ${total} rows filled</span>`;
+  if (n > 0 && total !== n) html += `<span class="badge-warn" style="margin-left:4px">Expected ${n} students, found ${total}</span>`;
+  st.innerHTML = html;
+}
+
+function confirmRoster() {
+  const empty = window._rosterData.filter(r => !r.roll || !r.name).length;
+  if (empty) { document.getElementById('err-rosterConfirm').classList.add('show'); return; }
+  document.getElementById('err-rosterConfirm').classList.remove('show');
+  window._rosterConfirmed = true;
+  // show done
+  const tbody = document.getElementById('rosterDoneBody');
+  tbody.innerHTML = window._rosterData.map((r, i) =>
+    `<tr><td><span class="row-num">${i+1}</span></td><td>${escH(r.roll)}</td><td>${escH(r.name)}</td></tr>`
+  ).join('');
+  document.getElementById('rosterDoneBadge').textContent = '✓ ' + window._rosterData.length + ' students confirmed';
+  document.getElementById('rosterConfirmStep').style.display = 'none';
+  document.getElementById('rosterDoneStep').style.display = '';
+  document.getElementById('err-roster').classList.remove('show');
+}
+
+function downloadTemplate() {
+  const n = parseInt(req('totalStudents').value) || 5;
+  let csv = 'Roll Number,Student Name\n';
+  for (let i = 1; i <= n; i++) csv += `${i},Student ${i}\n`;
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'student_roster_template.csv';
+  a.click();
+}
+
+function studentFileSelected(i) {
+  const file = document.getElementById('st-file-' + i).files[0];
+  const btn  = document.getElementById('st-btn-' + i);
+  if (file) {
+    btn.textContent = '✓ ' + (file.name.length > 20 ? file.name.slice(0,18)+'…' : file.name);
+    btn.classList.add('has-file');
+    // re-add hidden input
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.id = 'st-file-'+i; inp.accept = '.pdf,.jpg,.jpeg,.png';
+    inp.style.display = 'none';
+    inp.onchange = () => studentFileSelected(i);
+    btn.appendChild(inp);
+    // put original back
+    const origInp = document.createElement('input');
+    origInp.type = 'file'; origInp.id = 'st-file-'+i+'_real'; origInp.accept = '.pdf,.jpg,.jpeg,.png';
+    origInp.style.display = 'none';
+    btn.dataset.fileOk = '1';
+  }
+}
+
+// Simpler check for file presence
+function studentHasFile(i) {
+  const btn = document.getElementById('st-btn-' + i);
+  return btn && btn.dataset.fileOk === '1';
+}
+
+function validateSingle() {
+  const n = parseInt(req('totalStudents').value) || 0;
+  let ok = true;
+  for (let i = 1; i <= n; i++) {
+    const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
+    const name = (document.getElementById('st-name-' + i)?.value || '').trim();
+    const fileOk = studentHasFile(i);
+    if (!roll || !name || !fileOk) ok = false;
+  }
+  document.getElementById('err-studentTable').classList.toggle('show', !ok);
+  return ok;
+}
+
+// ── Submit ─────────────────────────────────────────────────────────────────
+async function submitAll() {
+  const btn = document.querySelector('.btn-submit');
+  const origText = btn.textContent;
+  btn.textContent = 'Uploading…';
+  btn.disabled = true;
+
+  try {
+    const fd = new FormData();
+    const fields = ['schoolName','schoolAddress','city','pinCode','email','phone',
+      'examName','classGrade','section','subject','examDate','maxMarks','failMarks',
+      'totalStudents','syllabusChapters','syllabusNotes'];
+    fields.forEach(id => { const el = document.getElementById(id); if (el) fd.append(id, el.value || ''); });
+    fd.append('uploadMethod', uploadMethod);
+    fd.append('roster', JSON.stringify(window._rosterData || []));
+
+    const qp = document.getElementById('qpFile').files[0];
+    const ak = document.getElementById('akFile').files[0];
+    if (qp) fd.append('questionPaper', qp);
+    if (ak) fd.append('answerKey', ak);
+
+    if (uploadMethod === 'bulk') {
+      Array.from(document.getElementById('bulkFiles').files).forEach(f => fd.append('answerSheets', f));
+    } else {
+      const n = parseInt(document.getElementById('totalStudents').value) || 0;
+      for (let i = 1; i <= n; i++) {
+        const inp = document.getElementById('st-file-' + i);
+        if (inp && inp.files && inp.files[0]) fd.append('answerSheets', inp.files[0]);
+      }
+    }
+
+    const res = await fetch('/api/pilot/submit', { method: 'POST', body: fd });
+    const json = await res.json().catch(() => ({}));
+
+    // In test mode, accept even if API is down
+    const submissionId = (json && json.submissionId) || ('VN-TEST-' + Date.now().toString(36).toUpperCase());
+    document.getElementById('refId').textContent = submissionId;
+    goPage(4);
+  } catch {
+    // Test mode — proceed anyway
+    document.getElementById('refId').textContent = 'VN-TEST-' + Date.now().toString(36).toUpperCase();
+    goPage(4);
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
+}
+
+// ── Reset ──────────────────────────────────────────────────────────────────
+function resetForm() {
+  document.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="date"],textarea,select').forEach(el => {
+    if (el.type === 'select-one') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  document.querySelectorAll('.field-err').forEach(e => e.classList.remove('show'));
+  document.querySelectorAll('.err').forEach(e => e.classList.remove('err'));
+  document.getElementById('qpLabel').style.display = 'none';
+  document.getElementById('akLabel').style.display = 'none';
+  document.getElementById('bulkFileList').innerHTML = '';
+  setMethod('bulk');
+  goPage(1);
+}
+</script>
+</body>
+</html>
