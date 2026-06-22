@@ -1187,7 +1187,7 @@ async function submitAll() {
       }
     }
 
-    const res = await fetch('/api/pilot/submit', { method: 'POST', body: fd });
+    const res = await fetch('https://lavish-recreation-production.up.railway.app/api/pilot/submit', { method: 'POST', body: fd });
     const json = await res.json().catch(() => ({}));
 
     // In test mode, accept even if API is down

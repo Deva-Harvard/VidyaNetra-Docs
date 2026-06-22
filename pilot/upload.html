@@ -1261,7 +1261,7 @@ async function submitAll() {
       fd.append('studentMeta', JSON.stringify(studentMeta));
     }
 
-    const res = await fetch('/api/pilot/submit', { method: 'POST', body: fd });
+    const res = await fetch('https://lavish-recreation-production.up.railway.app/api/pilot/submit', { method: 'POST', body: fd });
     const json = await res.json();
 
     if (!res.ok || !json.ok) throw new Error(json.error || 'Upload failed');
