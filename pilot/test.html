@@ -752,8 +752,9 @@
             <tbody id="studentTableBody"></tbody>
           </table>
         </div>
-        <div style="padding:8px 24px 16px">
+        <div style="padding:12px 24px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
           <div class="field-err" id="err-studentTable">All rows must be complete — fill name, roll number, and upload a file for each student</div>
+          <button type="button" onclick="addStudentRow()" style="flex-shrink:0;padding:7px 16px;border-radius:8px;border:1.5px dashed var(--green);background:transparent;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">+ Add student</button>
         </div>
       </div>
     </div>
@@ -842,8 +843,8 @@ function validatePage3() { return true; }
 function validateBulk()  { return true; }
 
 function validateSingle() {
-  const n = parseInt(req('totalStudents').value) || 0;
-  let ok = true;
+  const n = _studentRowCount;
+  let ok = n > 0;
   for (let i = 1; i <= n; i++) {
     const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
     const name = (document.getElementById('st-name-' + i)?.value || '').trim();
@@ -909,32 +910,42 @@ function setMethod(m) {
 }
 
 // ── Build page 3 ───────────────────────────────────────────────────────────
+let _studentRowCount = 0;
+
+function addStudentRow() {
+  _studentRowCount++;
+  const i = _studentRowCount;
+  const tbody = document.getElementById('studentTableBody');
+  const tr = document.createElement('tr');
+  tr.id = 'st-row-' + i;
+  tr.innerHTML = `
+    <td class="row-num">${i}</td>
+    <td><input type="text" id="st-roll-${i}" placeholder="Roll no." style="width:100%"></td>
+    <td><input type="text" id="st-name-${i}" placeholder="Student name" style="width:100%"></td>
+    <td>
+      <label class="file-upload-btn" id="st-btn-${i}">
+        📎 Choose file
+        <input type="file" id="st-file-${i}" accept=".pdf,.jpg,.jpeg,.png"
+          onchange="studentFileSelected(${i})">
+      </label>
+    </td>`;
+  tbody.appendChild(tr);
+  document.getElementById('singleCount').textContent = _studentRowCount;
+}
+
 function buildPage3() {
   const n = parseInt(req('totalStudents').value) || 0;
   document.getElementById('p3count').textContent = n;
-  document.getElementById('singleCount').textContent = n;
 
   // Reset roster on page rebuild
   resetRoster();
 
   // Student table (single)
+  _studentRowCount = 0;
   const tbody = document.getElementById('studentTableBody');
   tbody.innerHTML = '';
-  for (let i = 1; i <= n; i++) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="row-num">${i}</td>
-      <td><input type="text" id="st-roll-${i}" placeholder="Roll no." style="width:100%"></td>
-      <td><input type="text" id="st-name-${i}" placeholder="Student name" style="width:100%"></td>
-      <td>
-        <label class="file-upload-btn" id="st-btn-${i}">
-          📎 Choose file
-          <input type="file" id="st-file-${i}" accept=".pdf,.jpg,.jpeg,.png"
-            onchange="studentFileSelected(${i})">
-        </label>
-      </td>`;
-    tbody.appendChild(tr);
-  }
+  const rowsToCreate = Math.max(n, 1);
+  for (let i = 0; i < rowsToCreate; i++) addStudentRow();
 }
 
 // ── Roster upload / extract / confirm ─────────────────────────────────────
@@ -1144,8 +1155,8 @@ function studentHasFile(i) {
 }
 
 function validateSingle() {
-  const n = parseInt(req('totalStudents').value) || 0;
-  let ok = true;
+  const n = _studentRowCount;
+  let ok = n > 0;
   for (let i = 1; i <= n; i++) {
     const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
     const name = (document.getElementById('st-name-' + i)?.value || '').trim();
@@ -1170,7 +1181,19 @@ async function submitAll() {
       'totalStudents','syllabusChapters','syllabusNotes'];
     fields.forEach(id => { const el = document.getElementById(id); if (el) fd.append(id, el.value || ''); });
     fd.append('uploadMethod', uploadMethod);
-    fd.append('roster', JSON.stringify(window._rosterData || []));
+    // For single mode, build roster from the table inputs
+    if (uploadMethod === 'single') {
+      const roster = [];
+      for (let i = 1; i <= _studentRowCount; i++) {
+        const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
+        const name = (document.getElementById('st-name-' + i)?.value || '').trim();
+        if (roll || name) roster.push({ roll, name });
+      }
+      fd.append('roster', JSON.stringify(roster));
+      fd.append('totalStudents', String(_studentRowCount));
+    } else {
+      fd.append('roster', JSON.stringify(window._rosterData || []));
+    }
 
     const qp = document.getElementById('qpFile').files[0];
     const ak = document.getElementById('akFile').files[0];
@@ -1180,8 +1203,7 @@ async function submitAll() {
     if (uploadMethod === 'bulk') {
       Array.from(document.getElementById('bulkFiles').files).forEach(f => fd.append('answerSheets', f));
     } else {
-      const n = parseInt(document.getElementById('totalStudents').value) || 0;
-      for (let i = 1; i <= n; i++) {
+      for (let i = 1; i <= _studentRowCount; i++) {
         const inp = document.getElementById('st-file-' + i);
         if (inp && inp.files && inp.files[0]) fd.append('answerSheets', inp.files[0]);
       }
