@@ -83,18 +83,13 @@
   .hero-box-pink b { color: #111827; }
 
   .video-wrap {
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-    border-radius: 16px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 16px; color: #fff;
-    min-height: 200px;
+    border-radius: 16px; overflow: hidden;
+    aspect-ratio: 16/9; width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   }
-  .play-btn {
-    width: 60px; height: 60px; border-radius: 50%;
-    background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
-    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  .video-wrap iframe {
+    width: 100%; height: 100%; border: none; display: block;
   }
-  .video-label { font-size: 15px; font-weight: 700; color: #c7d2fe; }
-  .video-sub { font-size: 12px; color: #818cf8; }
 
   /* ══ SECTION 2 — HOW IT WORKS ══ */
   .sec-how { background: #fafafa; }
@@ -417,9 +412,7 @@
       </div>
     </div>
     <div class="video-wrap">
-      <div class="play-btn">▶</div>
-      <div class="video-label">Watch VidyaNetra in action</div>
-      <div class="video-sub">Demo video coming soon</div>
+      <iframe src="https://www.youtube.com/embed/G65s_-WXi8s" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
     </div>
   </div>
 </section>
