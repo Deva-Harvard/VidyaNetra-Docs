@@ -678,9 +678,9 @@
 
         <!-- Step A: upload -->
         <div id="rosterUploadStep">
-          <div class="info-banner">
-            Upload your class list as an <strong>Excel (.xlsx/.xls)</strong>, <strong>CSV</strong>, or <strong>PDF</strong>.
-            The file must have columns for <em>Roll Number</em> and <em>Student Name</em> (any column order).
+          <div class="info-banner" style="flex-direction:column;gap:6px">
+            <div>📂 Accepted formats: <strong>Excel (.xlsx / .xls)</strong>, <strong>CSV</strong>, or <strong>PDF</strong></div>
+            <div>📋 Required columns: <strong>Roll Number</strong> and <strong>Student Name</strong> &nbsp;<span style="font-weight:400;opacity:0.8">(any column order)</span></div>
           </div>
           <div class="roster-upload-zone" id="rosterZone"
                ondragover="dragOver(event,'rosterZone')" ondragleave="dragLeave('rosterZone')"
