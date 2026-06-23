@@ -215,7 +215,13 @@
     padding: 5px 12px;
     border-radius: 100px;
   }
-  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .upload-grid { display: flex; flex-direction: column; gap: 24px; }
+  .upload-step { display: flex; flex-direction: column; gap: 10px; }
+  .upload-step-header { display: flex; align-items: center; gap: 10px; }
+  .upload-step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--green); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .upload-step-num.locked { background: #d1d5db; }
+  .upload-zone.locked { opacity: 0.45; pointer-events: none; }
+  .upload-step-done { color: var(--green); font-size: 13px; font-weight: 600; margin-left: 4px; }
 
   /* ── Upload method toggle ── */
   .method-toggle {
@@ -593,12 +599,15 @@
 
     <div class="card">
       <div class="upload-grid">
-        <div>
-          <div class="card-title" style="border:none;margin-bottom:12px;padding-bottom:0">
-            📄 Question Paper <span class="req" style="color:var(--red)">*</span>
+        <!-- Step 1: Question Paper -->
+        <div class="upload-step">
+          <div class="upload-step-header">
+            <div class="upload-step-num" id="qpStepNum">1</div>
+            <div class="card-title" style="border:none;margin:0;padding:0">📄 Question Paper <span class="req" style="color:var(--red)">*</span></div>
+            <span class="upload-step-done" id="qpDone" style="display:none">✓ Uploaded</span>
           </div>
           <div class="upload-zone" id="qpZone" ondragover="dragOver(event,'qpZone')" ondragleave="dragLeave('qpZone')" ondrop="dropFile(event,'qpFile','qpZone','qpLabel')">
-            <input type="file" id="qpFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('qpFile','qpLabel','qpZone')">
+            <input type="file" id="qpFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('qpFile','qpLabel','qpZone'); unlockAnswerKey()">
             <div class="upload-icon">📑</div>
             <div class="upload-label">Click or drag to upload</div>
             <div class="upload-hint">PDF, JPG, PNG — max 20 MB</div>
@@ -606,14 +615,18 @@
           </div>
           <div class="field-err" id="err-qpFile" style="margin-top:6px">Question paper is required</div>
         </div>
-        <div>
-          <div class="card-title" style="border:none;margin-bottom:12px;padding-bottom:0">
-            🔑 Answer Key <span class="req" style="color:var(--red)">*</span>
+
+        <!-- Step 2: Answer Key (locked until QP uploaded) -->
+        <div class="upload-step">
+          <div class="upload-step-header">
+            <div class="upload-step-num locked" id="akStepNum">2</div>
+            <div class="card-title" style="border:none;margin:0;padding:0;color:#9ca3af" id="akStepTitle">🔑 Answer Key <span class="req" style="color:var(--red)">*</span></div>
+            <span class="upload-step-done" id="akDone" style="display:none">✓ Uploaded</span>
           </div>
-          <div class="upload-zone" id="akZone" ondragover="dragOver(event,'akZone')" ondragleave="dragLeave('akZone')" ondrop="dropFile(event,'akFile','akZone','akLabel')">
-            <input type="file" id="akFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('akFile','akLabel','akZone')">
+          <div class="upload-zone locked" id="akZone" ondragover="dragOver(event,'akZone')" ondragleave="dragLeave('akZone')" ondrop="dropFile(event,'akFile','akZone','akLabel')">
+            <input type="file" id="akFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('akFile','akLabel','akZone'); markAkDone()">
             <div class="upload-icon">📋</div>
-            <div class="upload-label">Click or drag to upload</div>
+            <div class="upload-label">Upload question paper first</div>
             <div class="upload-hint">PDF, JPG, PNG — max 20 MB</div>
             <div class="upload-file-name" id="akLabel" style="display:none"></div>
           </div>
@@ -919,6 +932,20 @@ function fileSelected(inputId, labelId, zoneId) {
   lbl.style.display = 'inline-flex';
   document.getElementById(zoneId).classList.remove('drag');
   clearErr(inputId);
+}
+
+function unlockAnswerKey() {
+  const file = document.getElementById('qpFile').files[0];
+  if (!file) return;
+  document.getElementById('akZone').classList.remove('locked');
+  document.getElementById('akStepNum').classList.remove('locked');
+  document.getElementById('akStepTitle').style.color = '';
+  document.getElementById('akZone').querySelector('.upload-label').textContent = 'Click or drag to upload';
+  document.getElementById('qpDone').style.display = 'inline';
+}
+
+function markAkDone() {
+  document.getElementById('akDone').style.display = 'inline';
 }
 
 function dropFile(e, inputId, zoneId, labelId) {
