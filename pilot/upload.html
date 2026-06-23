@@ -1230,9 +1230,6 @@ async function submitAll() {
     });
     fd.append('uploadMethod', uploadMethod);
 
-    // Roster
-    fd.append('roster', JSON.stringify(window._rosterData || []));
-
     // Files
     const qp = document.getElementById('qpFile').files[0];
     const ak = document.getElementById('akFile').files[0];
@@ -1240,20 +1237,24 @@ async function submitAll() {
     if (ak) fd.append('answerKey', ak);
 
     if (uploadMethod === 'bulk') {
+      fd.append('roster', JSON.stringify(window._rosterData || []));
       const sheets = document.getElementById('bulkFiles').files;
       Array.from(sheets).forEach(f => fd.append('answerSheets', f));
     } else {
       const n = parseInt(document.getElementById('totalStudents').value) || 0;
+      const roster = [];
       const studentMeta = [];
       for (let i = 1; i <= n; i++) {
         const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
         const name = (document.getElementById('st-name-' + i)?.value || '').trim();
         const inp  = document.getElementById('st-file-' + i);
+        roster.push({ roll, name });
         if (inp && inp.files && inp.files[0]) {
           fd.append('answerSheets', inp.files[0]);
           studentMeta.push({ roll, name });
         }
       }
+      fd.append('roster', JSON.stringify(roster));
       fd.append('studentMeta', JSON.stringify(studentMeta));
     }
 
