@@ -1129,21 +1129,18 @@ function downloadTemplate() {
 }
 
 function studentFileSelected(i) {
-  const file = document.getElementById('st-file-' + i).files[0];
+  const inp  = document.getElementById('st-file-' + i);
+  const file = inp && inp.files[0];
   const btn  = document.getElementById('st-btn-' + i);
-  if (file) {
-    btn.textContent = '✓ ' + (file.name.length > 20 ? file.name.slice(0,18)+'…' : file.name);
+  if (file && btn) {
+    // Find and update the text node, leaving the <input> child intact
+    for (const node of btn.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        node.textContent = ' ✓ ' + (file.name.length > 22 ? file.name.slice(0,20)+'…' : file.name);
+        break;
+      }
+    }
     btn.classList.add('has-file');
-    // re-add hidden input
-    const inp = document.createElement('input');
-    inp.type = 'file'; inp.id = 'st-file-'+i; inp.accept = '.pdf,.jpg,.jpeg,.png';
-    inp.style.display = 'none';
-    inp.onchange = () => studentFileSelected(i);
-    btn.appendChild(inp);
-    // put original back
-    const origInp = document.createElement('input');
-    origInp.type = 'file'; origInp.id = 'st-file-'+i+'_real'; origInp.accept = '.pdf,.jpg,.jpeg,.png';
-    origInp.style.display = 'none';
     btn.dataset.fileOk = '1';
   }
 }
