@@ -6,509 +6,285 @@
 <title>VidyaNetra — Interactive Demo</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --green: #16a34a;
     --green-dark: #15803d;
-    --green-light: #f0fdf4;
     --blue: #2463EB;
     --text: #111827;
     --muted: #6b7280;
     --border: #e5e7eb;
-    --bg: #f9fafb;
   }
 
-  body {
+  html, body {
+    height: 100%;
+    overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
+    background: #f1f5f9;
     color: var(--text);
-    min-height: 100vh;
+  }
+
+  /* ── Full viewport shell ── */
+  .shell {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
   }
 
-  /* ── Header ── */
-  header {
+  /* ── Top bar ── */
+  .topbar {
+    flex-shrink: 0;
     background: #fff;
     border-bottom: 1px solid var(--border);
-    padding: 14px 32px;
+    padding: 0 20px;
+    height: 52px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    gap: 16px;
   }
-  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .logo-icon { width: 32px; height: 32px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-  .logo-icon svg { width: 20px; height: 20px; fill: #fff; }
-  .logo-text { font-size: 18px; font-weight: 800; color: var(--text); }
+  .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .logo-icon { width: 28px; height: 28px; background: var(--green); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .logo-icon svg { width: 17px; height: 17px; fill: #fff; }
+  .logo-text { font-size: 16px; font-weight: 800; color: var(--text); }
   .logo-text span { color: var(--green); }
-  .header-badge {
-    background: var(--green-light);
-    color: var(--green-dark);
-    border: 1px solid #bbf7d0;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 12px;
-  }
-  .header-cta {
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 18px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  .header-cta:hover { background: var(--green-dark); }
 
-  /* ── Hero ── */
-  .hero {
-    text-align: center;
-    padding: 48px 24px 32px;
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-  }
-  .hero h1 { font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 10px; }
-  .hero h1 span { color: var(--green); }
-  .hero p { font-size: 16px; color: var(--muted); max-width: 560px; margin: 0 auto; line-height: 1.6; }
-
-  /* ── Step nav dots ── */
-  .step-nav {
+  .topbar-mid {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 20px 24px 0;
   }
   .dot {
     width: 8px; height: 8px;
     border-radius: 50%;
     background: var(--border);
-    cursor: pointer;
-    transition: all .2s;
     border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all .2s;
   }
-  .dot.active { background: var(--green); width: 24px; border-radius: 4px; }
+  .dot.active { background: var(--green); width: 22px; border-radius: 4px; }
   .dot.done { background: #86efac; }
 
-  /* ── Main slideshow ── */
-  .slideshow {
-    flex: 1;
-    max-width: 1100px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 24px 24px 40px;
-  }
-
-  .slide { display: none; }
-  .slide.active { display: block; }
-
-  .slide-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-  .step-num {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: var(--green);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 800;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .slide-meta { flex: 1; }
-  .slide-tag {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--green);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    margin-bottom: 4px;
-  }
-  .slide-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
-  .slide-desc { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 640px; }
-
-  .slide-img-wrap {
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-    background: #fff;
-    margin-bottom: 24px;
-  }
-  .slide-img-wrap img {
-    width: 100%;
-    display: block;
-  }
-
-  /* callout chips below image */
-  .callouts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .callout {
+  .topbar-right {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: var(--text);
-  }
-  .callout .icon { font-size: 15px; }
-
-  /* ── Navigation ── */
-  .nav-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
   }
   .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 22px;
-    border-radius: 10px;
-    font-size: 14px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     border: none;
     transition: all .15s;
+    white-space: nowrap;
   }
-  .nav-btn.prev {
+  .nav-btn.prev { background: #f3f4f6; color: var(--muted); }
+  .nav-btn.prev:hover:not(:disabled) { background: #e5e7eb; color: var(--text); }
+  .nav-btn.next { background: var(--green); color: #fff; }
+  .nav-btn.next:hover:not(:disabled) { background: var(--green-dark); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .step-counter { font-size: 12px; color: var(--muted); font-weight: 600; min-width: 60px; text-align: center; }
+
+  /* ── Slide info bar ── */
+  .infobar {
+    flex-shrink: 0;
     background: #fff;
-    border: 1px solid var(--border);
-    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
-  .nav-btn.prev:hover { border-color: #9ca3af; color: var(--text); }
-  .nav-btn.next {
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
     background: var(--green);
     color: #fff;
+    font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
   }
-  .nav-btn.next:hover { background: var(--green-dark); }
-  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+  .info-tag {
+    font-size: 10px; font-weight: 700; color: var(--green);
+    text-transform: uppercase; letter-spacing: .06em;
+    background: #f0fdf4; border: 1px solid #bbf7d0;
+    border-radius: 100px; padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .info-title { font-size: 15px; font-weight: 800; color: var(--text); }
+  .info-desc { font-size: 12px; color: var(--muted); line-height: 1.4; flex: 1; }
 
-  .step-counter { font-size: 13px; color: var(--muted); font-weight: 600; }
+  /* ── Image area ── */
+  .img-area {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: #e2e8f0;
+  }
+  .slide { display: none; width: 100%; height: 100%; }
+  .slide.active { display: flex; align-items: center; justify-content: center; }
+  .slide img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+    display: block;
+  }
 
-  /* ── Final CTA slide ── */
-  .cta-slide {
+  /* ── CTA slide ── */
+  .cta-box {
     text-align: center;
-    padding: 48px 24px;
     background: #fff;
     border-radius: 16px;
-    border: 1px solid var(--border);
+    padding: 48px 40px;
+    max-width: 480px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.1);
   }
-  .cta-slide h2 { font-size: 28px; font-weight: 900; margin-bottom: 12px; }
-  .cta-slide p { font-size: 15px; color: var(--muted); max-width: 480px; margin: 0 auto 28px; line-height: 1.6; }
-  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .cta-primary {
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 13px 28px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-  }
+  .cta-box h2 { font-size: 24px; font-weight: 900; margin-bottom: 10px; }
+  .cta-box p { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+  .cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .cta-primary { background: var(--green); color: #fff; border: none; border-radius: 9px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
   .cta-primary:hover { background: var(--green-dark); }
-  .cta-secondary {
-    background: #fff;
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 13px 28px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-  }
+  .cta-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); border-radius: 9px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; }
   .cta-secondary:hover { border-color: #9ca3af; }
-
-  @media (max-width: 600px) {
-    .hero h1 { font-size: 24px; }
-    .slide-title { font-size: 18px; }
-    header { padding: 12px 16px; }
-    .slideshow { padding: 16px 16px 32px; }
-  }
 </style>
 </head>
 <body>
+<div class="shell">
 
-<header>
-  <a class="logo" href="https://vidyanetra.org">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-    </div>
-    <span class="logo-text">Vidya<span>Netra</span></span>
-  </a>
-  <div class="header-badge">Interactive Demo</div>
-  <a class="header-cta" href="https://vidyanetra.org/#contact">Request Access</a>
-</header>
-
-<div class="hero">
-  <h1>See <span>VidyaNetra</span> in action</h1>
-  <p>A real exam — Class 12 Chemistry, 1st Mid Term — evaluated end to end by VidyaNetra's AI. Click through each step.</p>
-</div>
-
-<div class="step-nav" id="stepNav"></div>
-
-<div class="slideshow">
-
-  <!-- Step 1: Exam Details -->
-  <div class="slide active" data-step="1">
-    <div class="slide-header">
-      <div class="step-num">1</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Setup</div>
-        <div class="slide-title">Enter exam details</div>
-        <div class="slide-desc">Teachers fill in class, subject, date, max marks and the syllabus chapters covered. VidyaNetra uses the chapter list to anchor AI evaluation to the correct textbook content.</div>
+  <!-- Top navigation bar -->
+  <div class="topbar">
+    <a class="logo" href="https://vidyanetra.org">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
       </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-1-exam-details.png" alt="Exam details setup screen">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">🏫</span> Class 12-C · Chemistry · 1st Mid Term</div>
-      <div class="callout"><span class="icon">📅</span> Exam date, max marks, pass threshold</div>
-      <div class="callout"><span class="icon">📚</span> Syllabus chapters tied to textbook RAG</div>
+      <span class="logo-text">Vidya<span>Netra</span></span>
+    </a>
+
+    <div class="topbar-mid" id="dotNav"></div>
+
+    <div class="topbar-right">
+      <button class="nav-btn prev" id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
+      <span class="step-counter" id="stepCounter">1 / 10</span>
+      <button class="nav-btn next" id="nextBtn" onclick="navigate(1)">Next →</button>
     </div>
   </div>
 
-  <!-- Step 2: Question Paper -->
-  <div class="slide" data-step="2">
-    <div class="slide-header">
-      <div class="step-num">2</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Upload</div>
-        <div class="slide-title">Upload the question paper — AI extracts the blueprint</div>
-        <div class="slide-desc">Upload a PDF or image of the question paper. VidyaNetra's AI automatically extracts every question, its marks, answer type, and choice rules — ready for teacher confirmation.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-2-question-paper.png" alt="Question paper upload and extraction">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">🤖</span> Auto-extracts all questions & marks</div>
-      <div class="callout"><span class="icon">🔀</span> Detects choice rules (answer any 5 of 6)</div>
-      <div class="callout"><span class="icon">✏️</span> Teacher can edit extracted questions</div>
+  <!-- Slide info bar -->
+  <div class="infobar" id="infobar">
+    <div class="step-num" id="infoNum">1</div>
+    <span class="info-tag" id="infoTag">Setup</span>
+    <div>
+      <div class="info-title" id="infoTitle">Enter exam details</div>
+      <div class="info-desc" id="infoDesc">Teachers fill in class, subject, date, max marks and syllabus chapters. VidyaNetra ties chapter numbers to the correct textbook for AI-grounded evaluation.</div>
     </div>
   </div>
 
-  <!-- Step 3: Answer Key -->
-  <div class="slide" data-step="3">
-    <div class="slide-header">
-      <div class="step-num">3</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Upload</div>
-        <div class="slide-title">Upload the rubric — AI maps scoring rules</div>
-        <div class="slide-desc">Upload the answer key or rubric. VidyaNetra extracts model answers and per-step scoring rules, mapping them to each question in the blueprint.</div>
+  <!-- Image area -->
+  <div class="img-area">
+
+    <div class="slide active" data-step="1">
+      <img src="step-1-exam-details.png" alt="Exam details">
+    </div>
+    <div class="slide" data-step="2">
+      <img src="step-2-question-paper.png" alt="Question paper upload">
+    </div>
+    <div class="slide" data-step="3">
+      <img src="step-3-answer-key.png" alt="Answer key rubric">
+    </div>
+    <div class="slide" data-step="4">
+      <img src="step-4-students.png" alt="Students roster">
+    </div>
+    <div class="slide" data-step="5">
+      <img src="step-5c-evaluation-detail.png" alt="Evaluation review">
+    </div>
+    <div class="slide" data-step="6">
+      <img src="step-5b-evaluation-summary.png" alt="Evaluation summary">
+    </div>
+    <div class="slide" data-step="7">
+      <img src="step-6-netra-overview.png" alt="Netra analytics overview">
+    </div>
+    <div class="slide" data-step="8">
+      <img src="step-7-students-heatmap.png" alt="Students heatmap">
+    </div>
+    <div class="slide" data-step="9">
+      <img src="step-8-diagnosis.png" alt="Learning diagnosis">
+    </div>
+    <div class="slide" data-step="10">
+      <img src="step-9-error-patterns.png" alt="Error patterns">
+    </div>
+    <div class="slide" data-step="11">
+      <img src="step-10-principal-analytics.png" alt="Principal analytics">
+    </div>
+    <div class="slide" data-step="12">
+      <div class="cta-box">
+        <div style="font-size:44px;margin-bottom:14px">🎓</div>
+        <h2>Ready to try VidyaNetra?</h2>
+        <p>Join our pilot programme — set up in minutes, results in hours. We'll onboard you personally.</p>
+        <div class="cta-btns">
+          <a class="cta-primary" href="https://vidyanetra.org/#contact">Request Access</a>
+          <a class="cta-secondary" href="https://vidyanetra.org/pilot/upload.html">Submit a Test Exam</a>
+        </div>
       </div>
     </div>
-    <div class="slide-img-wrap">
-      <img src="step-3-answer-key.png" alt="Answer key rubric upload and extraction">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">🗝️</span> Model answers extracted per question</div>
-      <div class="callout"><span class="icon">📊</span> Per-step marks mapped automatically</div>
-      <div class="callout"><span class="icon">✅</span> Teacher reviews before grading starts</div>
-    </div>
-  </div>
 
-  <!-- Step 4: Students -->
-  <div class="slide" data-step="4">
-    <div class="slide-header">
-      <div class="step-num">4</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Students</div>
-        <div class="slide-title">Upload student answer sheets</div>
-        <div class="slide-desc">Upload answer sheets one per student or in bulk. VidyaNetra runs OCR, evaluates, and shows live progress in the class roster — marks appear as each sheet is processed.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-4-students.png" alt="Student roster with evaluation progress">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">👥</span> 5 students · OCR → Eval → Done</div>
-      <div class="callout"><span class="icon">⚡</span> Live progress per student</div>
-      <div class="callout"><span class="icon">📥</span> Bulk or student-by-student upload</div>
-    </div>
-  </div>
-
-  <!-- Step 5: Evaluation Review -->
-  <div class="slide" data-step="5">
-    <div class="slide-header">
-      <div class="step-num">5</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Review</div>
-        <div class="slide-title">AI evaluation — question by question</div>
-        <div class="slide-desc">For each question, VidyaNetra shows the student's extracted answer, AI analysis per sub-part, marks awarded, and confidence level. Teachers can override any mark before finalising.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-5c-evaluation-detail.png" alt="AI evaluation review screen">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">🧠</span> Sub-part level AI analysis</div>
-      <div class="callout"><span class="icon">💬</span> Reasoning shown for every mark</div>
-      <div class="callout"><span class="icon">✏️</span> Teacher override with one click</div>
-      <div class="callout"><span class="icon">🎯</span> HIGH CONFIDENCE flag on reliable evaluations</div>
-    </div>
-  </div>
-
-  <!-- Step 6: Netra Overview -->
-  <div class="slide" data-step="6">
-    <div class="slide-header">
-      <div class="step-num">6</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Analytics</div>
-        <div class="slide-title">Instant class analytics overview</div>
-        <div class="slide-desc">Once evaluations are accepted, Netra Analytics computes class-wide statistics instantly — average, median, highest, lowest, fail count, and missed criteria — no manual calculation needed.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-6-netra-overview.png" alt="Netra analytics class overview">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">📈</span> Avg 60% · Median 72%</div>
-      <div class="callout"><span class="icon">🔴</span> 1 fail identified instantly</div>
-      <div class="callout"><span class="icon">📋</span> 41 missed criteria flagged</div>
-    </div>
-  </div>
-
-  <!-- Step 7: Students Heatmap -->
-  <div class="slide" data-step="7">
-    <div class="slide-header">
-      <div class="step-num">7</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Analytics · Students</div>
-        <div class="slide-title">Performance heatmap & per-student drill-down</div>
-        <div class="slide-desc">The Students tab shows a question-wise performance heatmap for the whole class, score distribution bands, and question difficulty ranking. Click any student to see their full question-by-question breakdown.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-7-students-heatmap.png" alt="Class performance heatmap and student drill-down">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">🟥</span> Heatmap: green = full marks, red = max lost</div>
-      <div class="callout"><span class="icon">📊</span> Score distribution by band</div>
-      <div class="callout"><span class="icon">🔍</span> Per-student panel with sub-part feedback</div>
-    </div>
-  </div>
-
-  <!-- Step 8: Diagnosis -->
-  <div class="slide" data-step="8">
-    <div class="slide-header">
-      <div class="step-num">8</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Analytics · Diagnosis</div>
-        <div class="slide-title">Learning diagnosis per student</div>
-        <div class="slide-desc">Beyond marks — VidyaNetra maps student answers to subject skill indicators (Equation Writing, Stoichiometry, Conceptual Understanding etc.) and flags which skills need attention vs are strong.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-8-diagnosis.png" alt="Per-student learning diagnosis">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">⚠️</span> "Needs attention" skills flagged per student</div>
-      <div class="callout"><span class="icon">💪</span> Strong skills identified</div>
-      <div class="callout"><span class="icon">🔗</span> Linked to specific questions that surfaced each signal</div>
-    </div>
-  </div>
-
-  <!-- Step 9: Error Patterns -->
-  <div class="slide" data-step="9">
-    <div class="slide-header">
-      <div class="step-num">9</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Analytics · Error Patterns</div>
-        <div class="slide-title">Class-wide error pattern analysis</div>
-        <div class="slide-desc">VidyaNetra categorises all errors into nine error families (Procedural, Not attempted, Incomplete answer etc.) and shows exactly which students lost marks where — helping teachers target remediation precisely.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-9-error-patterns.png" alt="Error patterns across the class">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">🔴</span> Procedural errors: 30 marks lost across 5 students</div>
-      <div class="callout"><span class="icon">📌</span> Click any error family to see affected students</div>
-      <div class="callout"><span class="icon">🎯</span> Question-level breakdown per student</div>
-    </div>
-  </div>
-
-  <!-- Step 10: Principal Analytics -->
-  <div class="slide" data-step="10">
-    <div class="slide-header">
-      <div class="step-num">10</div>
-      <div class="slide-meta">
-        <div class="slide-tag">Principal Overview</div>
-        <div class="slide-title">School-wide analytics for principals</div>
-        <div class="slide-desc">Principals get a unified view across all classes, sections, subjects and exams — pass/fail rates, score distributions, students below threshold — filterable by any dimension in real time.</div>
-      </div>
-    </div>
-    <div class="slide-img-wrap">
-      <img src="step-10-principal-analytics.png" alt="Principal school-wide analytics dashboard">
-    </div>
-    <div class="callouts">
-      <div class="callout"><span class="icon">🏫</span> 23 exams · 85 students · school-wide</div>
-      <div class="callout"><span class="icon">🔎</span> Filter by class, section, subject, exam, date</div>
-      <div class="callout"><span class="icon">📉</span> Students below 30/40/50/60% tracked</div>
-    </div>
-  </div>
-
-  <!-- Final CTA -->
-  <div class="slide" data-step="11">
-    <div class="cta-slide">
-      <div style="font-size:48px;margin-bottom:16px">🎓</div>
-      <h2>Ready to try VidyaNetra in your school?</h2>
-      <p>Join our pilot programme — set up in minutes, results in hours. We'll onboard you personally.</p>
-      <div class="cta-btns">
-        <a class="cta-primary" href="https://vidyanetra.org/#contact">Request Access</a>
-        <a class="cta-secondary" href="https://vidyanetra.org/pilot/upload.html">Submit a Test Exam</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="nav-row">
-    <button class="nav-btn prev" id="prevBtn" onclick="navigate(-1)" disabled>← Previous</button>
-    <span class="step-counter" id="stepCounter">Step 1 of 10</span>
-    <button class="nav-btn next" id="nextBtn" onclick="navigate(1)">Next →</button>
   </div>
 </div>
 
 <script>
-  const TOTAL = 11; // 10 steps + CTA
+  const SLIDES = [
+    { tag: 'Setup',              title: 'Enter exam details',                       desc: 'Fill in class, subject, date, marks and syllabus chapters. VidyaNetra uses chapter numbers to anchor AI evaluation to the correct textbook.' },
+    { tag: 'Upload',             title: 'Upload question paper — AI extracts blueprint', desc: 'Upload a PDF or image. VidyaNetra automatically extracts every question, marks, answer type and choice rules for teacher confirmation.' },
+    { tag: 'Upload',             title: 'Upload rubric — AI maps scoring rules',    desc: 'Upload the answer key or rubric. Model answers and per-step marks are extracted and mapped to each question.' },
+    { tag: 'Students',           title: 'Upload answer sheets per student',         desc: 'Upload sheets one per student or in bulk. OCR runs, evaluation starts, and marks appear live in the class roster.' },
+    { tag: 'Review',             title: 'AI evaluation — question by question',     desc: 'Sub-part level analysis with marks awarded, confidence flag, and reasoning shown. Teacher can override any mark.' },
+    { tag: 'Review',             title: 'Full evaluation summary across questions', desc: 'See all questions A-1 through A-5 evaluated with confidence flags, marks, and anomaly alerts in one scrollable view.' },
+    { tag: 'Analytics',          title: 'Instant class analytics overview',         desc: 'Avg, median, highest, lowest, fails and missed criteria computed instantly across all evaluated students.' },
+    { tag: 'Analytics · Students', title: 'Performance heatmap & score distribution', desc: 'Question-wise heatmap for the whole class, score bands, question difficulty ranking, and per-student drill-down panel.' },
+    { tag: 'Analytics · Diagnosis', title: 'Learning diagnosis per student',       desc: 'VidyaNetra maps answers to subject skill indicators — flags which skills need attention vs are strong per student.' },
+    { tag: 'Analytics · Error Patterns', title: 'Class-wide error pattern analysis', desc: 'Nine error families (Procedural, Not attempted, Incomplete) with exact students and questions for each pattern.' },
+    { tag: 'Principal Overview', title: 'School-wide analytics for principals',    desc: 'Unified view across all classes, sections, subjects and exams — pass/fail rates, score distributions, filterable by any dimension.' },
+    { tag: '',                   title: '',                                          desc: '' },
+  ];
+
+  const TOTAL = SLIDES.length;
   let current = 1;
 
   function buildDots() {
-    const nav = document.getElementById('stepNav');
+    const nav = document.getElementById('dotNav');
     for (let i = 1; i <= TOTAL; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'dot' + (i === 1 ? ' active' : '');
-      btn.title = 'Step ' + i;
-      btn.onclick = () => goTo(i);
-      nav.appendChild(btn);
+      const b = document.createElement('button');
+      b.className = 'dot' + (i === 1 ? ' active' : '');
+      b.onclick = () => goTo(i);
+      nav.appendChild(b);
     }
   }
 
-  function updateDots() {
+  function goTo(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.querySelector('[data-step="' + n + '"]').classList.add('active');
+    current = n;
+
+    document.getElementById('prevBtn').disabled = current === 1;
+    document.getElementById('nextBtn').disabled = current === TOTAL;
+    document.getElementById('stepCounter').textContent = current === TOTAL ? '✓ Done' : current + ' / ' + (TOTAL - 1);
+
+    const s = SLIDES[n - 1];
+    document.getElementById('infoNum').textContent = current === TOTAL ? '✓' : n;
+    document.getElementById('infoTag').textContent = s.tag;
+    document.getElementById('infoTitle').textContent = s.title;
+    document.getElementById('infoDesc').textContent = s.desc;
+    document.getElementById('infobar').style.display = current === TOTAL ? 'none' : 'flex';
+
     document.querySelectorAll('.dot').forEach((d, i) => {
       d.className = 'dot';
       if (i + 1 < current) d.classList.add('done');
@@ -516,25 +292,11 @@
     });
   }
 
-  function goTo(n) {
-    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-    document.querySelector('[data-step="' + n + '"]').classList.add('active');
-    current = n;
-    document.getElementById('prevBtn').disabled = current === 1;
-    document.getElementById('nextBtn').disabled = current === TOTAL;
-    document.getElementById('nextBtn').textContent = current === TOTAL - 1 ? 'See what\'s next →' : current === TOTAL ? '' : 'Next →';
-    const counter = document.getElementById('stepCounter');
-    counter.textContent = current === TOTAL ? 'You\'ve seen it all!' : 'Step ' + current + ' of ' + (TOTAL - 1);
-    updateDots();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  function navigate(dir) { if (current + dir >= 1 && current + dir <= TOTAL) goTo(current + dir); }
 
-  function navigate(dir) { goTo(current + dir); }
-
-  // keyboard navigation
   document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' && current < TOTAL) navigate(1);
-    if (e.key === 'ArrowLeft' && current > 1) navigate(-1);
+    if (e.key === 'ArrowRight') navigate(1);
+    if (e.key === 'ArrowLeft') navigate(-1);
   });
 
   buildDots();
