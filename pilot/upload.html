@@ -779,15 +779,6 @@
       </div>
     </div>
 
-    <!-- Confirmation checkbox -->
-    <div class="card" style="margin-top:16px">
-      <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:13px;line-height:1.5">
-        <input type="checkbox" id="confirmCheckbox" style="margin-top:3px;width:16px;height:16px;flex-shrink:0;accent-color:var(--green)">
-        <span>I confirm that the uploaded question paper, answer key, and student answer sheets all belong to the same exam and are complete.</span>
-      </label>
-      <div class="field-err" id="err-confirm" style="margin-top:8px">Please confirm before submitting</div>
-    </div>
-
     <!-- Processing expectation -->
     <div class="info-banner" style="margin-top:12px;background:#f0fdf4;border-color:#86efac;color:#14532d">
       ⏱ <strong>Estimated processing time: as communicated during the pilot programme.</strong>
@@ -1272,9 +1263,6 @@ function validateSingle() {
 // ── Submit ─────────────────────────────────────────────────────────────────
 async function submitAll() {
   if (!validatePage3()) return;
-  const checked = document.getElementById('confirmCheckbox').checked;
-  document.getElementById('err-confirm').classList.toggle('show', !checked);
-  if (!checked) return;
 
   // Show spinner on button
   const btn = document.querySelector('.btn-submit');
