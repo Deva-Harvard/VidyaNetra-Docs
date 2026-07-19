@@ -81,7 +81,14 @@
     gap: 10px;
     flex: 1;
     position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 4px 6px;
+    margin: -4px -6px;
+    transition: background 0.15s;
   }
+  .step:hover { background: var(--green-light); }
+  .step:hover .step-label { color: var(--green-dark); }
   .step:not(:last-child)::after {
     content: '';
     flex: 1;
@@ -433,15 +440,15 @@
 
 <div class="stepper-wrap">
   <div class="stepper">
-    <div class="step active" id="s1">
+    <div class="step active" id="s1" onclick="goPage(1)">
       <div class="step-num">1</div>
       <span class="step-label">School &amp; Exam Details</span>
     </div>
-    <div class="step" id="s2">
+    <div class="step" id="s2" onclick="goPage(2)">
       <div class="step-num">2</div>
       <span class="step-label">Upload Documents</span>
     </div>
-    <div class="step" id="s3">
+    <div class="step" id="s3" onclick="goPage(3)">
       <div class="step-num">3</div>
       <span class="step-label">Student Answer Sheets</span>
     </div>
@@ -467,27 +474,27 @@
           <div class="field-err" id="err-schoolName">Required</div>
         </div>
         <div class="field full">
-          <label>School address <span class="req">*</span></label>
+          <label>School address <span style="color:var(--muted);font-weight:400">(optional)</span></label>
           <input type="text" id="schoolAddress" placeholder="Street, area, landmark" />
           <div class="field-err" id="err-schoolAddress">Required</div>
         </div>
         <div class="field">
-          <label>City <span class="req">*</span></label>
+          <label>City <span style="color:var(--muted);font-weight:400">(optional)</span></label>
           <input type="text" id="city" placeholder="e.g. Chennai" />
           <div class="field-err" id="err-city">Required</div>
         </div>
         <div class="field">
-          <label>Pin code <span class="req">*</span></label>
+          <label>Pin code <span style="color:var(--muted);font-weight:400">(optional)</span></label>
           <input type="text" id="pinCode" placeholder="6-digit pin" maxlength="6" />
           <div class="field-err" id="err-pinCode">Enter a valid 6-digit pin code</div>
         </div>
         <div class="field">
-          <label>Email ID <span class="req">*</span></label>
+          <label>Email ID <span style="color:var(--muted);font-weight:400">(optional)</span></label>
           <input type="email" id="email" placeholder="teacher@school.edu.in" />
           <div class="field-err" id="err-email">Enter a valid email address</div>
         </div>
         <div class="field">
-          <label>Phone number <span class="req">*</span></label>
+          <label>Phone number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
           <input type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" />
           <div class="field-err" id="err-phone">Enter a valid 10-digit number</div>
         </div>
@@ -595,7 +602,11 @@
   <!-- ══════════════════ PAGE 2 ══════════════════ -->
   <div class="page" id="page2">
     <div class="page-title">Upload Documents</div>
-    <div class="page-subtitle">Upload the question paper and answer key for this exam. PDF or JPG accepted.</div>
+    <div class="page-subtitle">Question paper and answer key are optional here — you can send these separately, or skip this page entirely.</div>
+
+    <div class="info-banner">
+      ℹ️ This step is optional. If you've already shared the question paper and answer key with us another way, just skip ahead to Student Answer Sheets.
+    </div>
 
     <div class="card">
       <div class="upload-grid">
@@ -603,34 +614,32 @@
         <div class="upload-step">
           <div class="upload-step-header">
             <div class="upload-step-num" id="qpStepNum">1</div>
-            <div class="card-title" style="border:none;margin:0;padding:0">📄 Question Paper <span class="req" style="color:var(--red)">*</span></div>
+            <div class="card-title" style="border:none;margin:0;padding:0">📄 Question Paper <span style="color:var(--muted);font-weight:400;font-size:12px">(optional)</span></div>
             <span class="upload-step-done" id="qpDone" style="display:none">✓ Uploaded</span>
           </div>
           <div class="upload-zone" id="qpZone" ondragover="dragOver(event,'qpZone')" ondragleave="dragLeave('qpZone')" ondrop="dropFile(event,'qpFile','qpZone','qpLabel')">
-            <input type="file" id="qpFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('qpFile','qpLabel','qpZone'); unlockAnswerKey()">
+            <input type="file" id="qpFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('qpFile','qpLabel','qpZone'); markQpDone()">
             <div class="upload-icon">📑</div>
             <div class="upload-label">Click or drag to upload</div>
             <div class="upload-hint">PDF, JPG, PNG — max 20 MB</div>
             <div class="upload-file-name" id="qpLabel" style="display:none"></div>
           </div>
-          <div class="field-err" id="err-qpFile" style="margin-top:6px">Question paper is required</div>
         </div>
 
-        <!-- Step 2: Answer Key (locked until QP uploaded) -->
+        <!-- Step 2: Answer Key (independent — not gated on QP anymore) -->
         <div class="upload-step">
           <div class="upload-step-header">
-            <div class="upload-step-num locked" id="akStepNum">2</div>
-            <div class="card-title" style="border:none;margin:0;padding:0;color:#9ca3af" id="akStepTitle">🔑 Answer Key <span class="req" style="color:var(--red)">*</span></div>
+            <div class="upload-step-num" id="akStepNum">2</div>
+            <div class="card-title" style="border:none;margin:0;padding:0" id="akStepTitle">🔑 Answer Key <span style="color:var(--muted);font-weight:400;font-size:12px">(optional)</span></div>
             <span class="upload-step-done" id="akDone" style="display:none">✓ Uploaded</span>
           </div>
-          <div class="upload-zone locked" id="akZone" ondragover="dragOver(event,'akZone')" ondragleave="dragLeave('akZone')" ondrop="dropFile(event,'akFile','akZone','akLabel')">
+          <div class="upload-zone" id="akZone" ondragover="dragOver(event,'akZone')" ondragleave="dragLeave('akZone')" ondrop="dropFile(event,'akFile','akZone','akLabel')">
             <input type="file" id="akFile" accept=".pdf,.jpg,.jpeg,.png" onchange="fileSelected('akFile','akLabel','akZone'); markAkDone()">
             <div class="upload-icon">📋</div>
-            <div class="upload-label">Upload question paper first</div>
+            <div class="upload-label">Click or drag to upload</div>
             <div class="upload-hint">PDF, JPG, PNG — max 20 MB</div>
             <div class="upload-file-name" id="akLabel" style="display:none"></div>
           </div>
-          <div class="field-err" id="err-akFile" style="margin-top:6px">Answer key is required</div>
         </div>
       </div>
     </div>
@@ -757,13 +766,15 @@
                 <th style="width:140px">Roll number <span style="color:var(--red)">*</span></th>
                 <th>Student name <span style="color:var(--red)">*</span></th>
                 <th style="width:180px">Answer sheet <span style="color:var(--red)">*</span></th>
+                <th style="width:40px"></th>
               </tr>
             </thead>
             <tbody id="studentTableBody"></tbody>
           </table>
         </div>
-        <div style="padding:8px 24px 16px">
-          <div class="field-err" id="err-studentTable">All rows must be complete — fill name, roll number, and upload a file for each student</div>
+        <div style="padding:12px 24px 16px">
+          <button type="button" class="btn btn-secondary" style="font-size:13px;padding:9px 16px" onclick="addStudentRow()">+ Add student row</button>
+          <div class="field-err" id="err-studentTable" style="margin-top:10px">All rows must be complete — fill name, roll number, and upload a file for each student</div>
         </div>
       </div>
     </div>
@@ -813,7 +824,8 @@ let uploadMethod = 'bulk';
 
 // ── Page navigation ────────────────────────────────────────────────────────
 function goPage(n) {
-  if (n > currentPage && !validatePage(currentPage)) return;
+  // Navigation is free — no page blocks moving to another page, forward or back.
+  // Only the final "Submit for Evaluation" action (submitAll) still validates.
   if (n === 3) buildPage3();
   currentPage = n;
   document.querySelectorAll('.page').forEach((p, i) => {
@@ -846,26 +858,31 @@ function validatePage(n) {
 }
 
 function validatePage1() {
+  // School address, city, pin code, email, and phone are now optional (grey,
+  // not red) — dropped from the required list. School name and the Exam
+  // Details fields below stay required. Note: validatePage1 is currently
+  // dead code — goPage() no longer calls it — kept accurate in case
+  // something else references it later.
   let ok = true;
-  const required = ['schoolName','schoolAddress','city','examName','classGrade','section','subject','examDate','syllabusChapters'];
+  const required = ['schoolName','examName','classGrade','section','subject','examDate','syllabusChapters'];
   required.forEach(id => {
     const v = req(id).value.trim();
     setErr(id, 'Required', !v);
     if (!v) ok = false;
   });
-  // Email
+  // Email — only validated if provided, since it's optional now
   const em = req('email').value.trim();
-  const emOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+  const emOk = !em || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
   setErr('email', 'Enter a valid email address', !emOk);
   if (!emOk) ok = false;
-  // Phone
+  // Phone — only validated if provided, since it's optional now
   const ph = req('phone').value.trim();
-  const phOk = /^\d{10}$/.test(ph);
+  const phOk = !ph || /^\d{10}$/.test(ph);
   setErr('phone', 'Enter a valid 10-digit number', !phOk);
   if (!phOk) ok = false;
-  // Pin
+  // Pin — only validated if provided, since it's optional now
   const pin = req('pinCode').value.trim();
-  const pinOk = /^\d{6}$/.test(pin);
+  const pinOk = !pin || /^\d{6}$/.test(pin);
   setErr('pinCode', 'Enter a valid 6-digit pin code', !pinOk);
   if (!pinOk) ok = false;
   // Marks
@@ -880,14 +897,10 @@ function validatePage1() {
 }
 
 function validatePage2() {
-  let ok = true;
-  const qp = req('qpFile').files.length > 0;
-  setErr('qpFile', 'Question paper is required', !qp);
-  if (!qp) ok = false;
-  const ak = req('akFile').files.length > 0;
-  setErr('akFile', 'Answer key is required', !ak);
-  if (!ak) ok = false;
-  return ok;
+  // Question paper and answer key are optional — nothing on this page blocks
+  // moving forward. Kept as a no-op (rather than deleted) since goPage() no
+  // longer calls it anyway; here for clarity if something else references it.
+  return true;
 }
 
 function validatePage3() {
@@ -907,19 +920,6 @@ function validateBulk() {
   return ok;
 }
 
-function validateSingle() {
-  const n = parseInt(req('totalStudents').value) || 0;
-  let ok = true;
-  for (let i = 1; i <= n; i++) {
-    const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
-    const name = (document.getElementById('st-name-' + i)?.value || '').trim();
-    const file = document.getElementById('st-file-' + i)?.files?.length > 0;
-    if (!roll || !name || !file) { ok = false; }
-  }
-  document.getElementById('err-studentTable').classList.toggle('show', !ok);
-  return ok;
-}
-
 // ── Upload zones ───────────────────────────────────────────────────────────
 function dragOver(e, zoneId) { e.preventDefault(); document.getElementById(zoneId).classList.add('drag'); }
 function dragLeave(zoneId) { document.getElementById(zoneId).classList.remove('drag'); }
@@ -934,18 +934,12 @@ function fileSelected(inputId, labelId, zoneId) {
   clearErr(inputId);
 }
 
-function unlockAnswerKey() {
-  const file = document.getElementById('qpFile').files[0];
-  if (!file) return;
-  document.getElementById('akZone').classList.remove('locked');
-  document.getElementById('akStepNum').classList.remove('locked');
-  document.getElementById('akStepTitle').style.color = '';
-  document.getElementById('akZone').querySelector('.upload-label').textContent = 'Click or drag to upload';
-  document.getElementById('qpDone').style.display = 'inline';
-}
-
 function markAkDone() {
   document.getElementById('akDone').style.display = 'inline';
+}
+
+function markQpDone() {
+  document.getElementById('qpDone').style.display = 'inline';
 }
 
 function dropFile(e, inputId, zoneId, labelId) {
@@ -989,32 +983,64 @@ function setMethod(m) {
 }
 
 // ── Build page 3 ───────────────────────────────────────────────────────────
+// Running counter for generating unique row IDs — independent of totalStudents,
+// so rows can be added/removed freely regardless of what (if anything) was
+// entered on page 1. Rows use their own counter, not a 1..n loop tied to a
+// field that may never have been filled in (page 1 is now skippable).
+window._studentRowIndex = 0;
+window._studentTableBuilt = false;
+
+function updateP3Counts() {
+  const rows = document.querySelectorAll('#studentTableBody tr').length;
+  document.getElementById('p3count').textContent = rows;
+  document.getElementById('singleCount').textContent = rows;
+}
+
+function addStudentRow() {
+  window._studentRowIndex += 1;
+  const i = window._studentRowIndex;
+  const tbody = document.getElementById('studentTableBody');
+  const tr = document.createElement('tr');
+  tr.id = 'st-row-' + i;
+  tr.innerHTML = `
+    <td class="row-num">${tbody.children.length + 1}</td>
+    <td><input type="text" id="st-roll-${i}" placeholder="Roll no." style="width:100%"></td>
+    <td><input type="text" id="st-name-${i}" placeholder="Student name" style="width:100%"></td>
+    <td>
+      <label class="file-upload-btn" id="st-btn-${i}">
+        📎 Choose file
+        <input type="file" id="st-file-${i}" accept=".pdf,.jpg,.jpeg,.png"
+          onchange="studentFileSelected(${i})">
+      </label>
+    </td>
+    <td><button type="button" class="del-btn" onclick="removeStudentRow(${i})" title="Remove">&#x2715;</button></td>`;
+  tbody.appendChild(tr);
+  updateP3Counts();
+}
+
+function removeStudentRow(i) {
+  const row = document.getElementById('st-row-' + i);
+  if (row) row.remove();
+  // Renumber the visible "#" column only — IDs stay stable so nothing else breaks.
+  document.querySelectorAll('#studentTableBody tr').forEach((tr, idx) => {
+    tr.querySelector('.row-num').textContent = idx + 1;
+  });
+  updateP3Counts();
+}
+
 function buildPage3() {
   const n = parseInt(req('totalStudents').value) || 0;
-  document.getElementById('p3count').textContent = n;
-  document.getElementById('singleCount').textContent = n;
 
   // Reset roster on page rebuild
   resetRoster();
 
-  // Student table (single)
-  const tbody = document.getElementById('studentTableBody');
-  tbody.innerHTML = '';
-  for (let i = 1; i <= n; i++) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="row-num">${i}</td>
-      <td><input type="text" id="st-roll-${i}" placeholder="Roll no." style="width:100%"></td>
-      <td><input type="text" id="st-name-${i}" placeholder="Student name" style="width:100%"></td>
-      <td>
-        <label class="file-upload-btn" id="st-btn-${i}">
-          📎 Choose file
-          <input type="file" id="st-file-${i}" accept=".pdf,.jpg,.jpeg,.png"
-            onchange="studentFileSelected(${i})">
-        </label>
-      </td>`;
-    tbody.appendChild(tr);
+  // Only auto-populate rows the first time page 3 is reached, so navigating
+  // back and forth doesn't wipe out rows the teacher already filled in.
+  if (!window._studentTableBuilt) {
+    window._studentTableBuilt = true;
+    for (let k = 0; k < n; k++) addStudentRow();
   }
+  updateP3Counts();
 }
 
 // ── Roster upload / extract / confirm ─────────────────────────────────────
@@ -1219,15 +1245,23 @@ function studentHasFile(i) {
   return btn && btn.dataset.fileOk === '1';
 }
 
+function studentRowIndices() {
+  // Reads actual indices from the DOM (row ids are "st-row-<i>") rather than
+  // assuming a fixed 1..totalStudents range — rows can be added/removed freely.
+  return Array.from(document.querySelectorAll('#studentTableBody tr')).map(
+    (tr) => parseInt(tr.id.replace('st-row-', ''), 10),
+  );
+}
+
 function validateSingle() {
-  const n = parseInt(req('totalStudents').value) || 0;
-  let ok = true;
-  for (let i = 1; i <= n; i++) {
+  const indices = studentRowIndices();
+  let ok = indices.length > 0; // at least one student row required
+  indices.forEach((i) => {
     const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
     const name = (document.getElementById('st-name-' + i)?.value || '').trim();
     const fileOk = studentHasFile(i);
     if (!roll || !name || !fileOk) ok = false;
-  }
+  });
   document.getElementById('err-studentTable').classList.toggle('show', !ok);
   return ok;
 }
@@ -1268,10 +1302,9 @@ async function submitAll() {
       const sheets = document.getElementById('bulkFiles').files;
       Array.from(sheets).forEach(f => fd.append('answerSheets', f));
     } else {
-      const n = parseInt(document.getElementById('totalStudents').value) || 0;
       const roster = [];
       const studentMeta = [];
-      for (let i = 1; i <= n; i++) {
+      studentRowIndices().forEach((i) => {
         const roll = (document.getElementById('st-roll-' + i)?.value || '').trim();
         const name = (document.getElementById('st-name-' + i)?.value || '').trim();
         const inp  = document.getElementById('st-file-' + i);
@@ -1280,7 +1313,7 @@ async function submitAll() {
           fd.append('answerSheets', inp.files[0]);
           studentMeta.push({ roll, name });
         }
-      }
+      });
       fd.append('roster', JSON.stringify(roster));
       fd.append('studentMeta', JSON.stringify(studentMeta));
     }
