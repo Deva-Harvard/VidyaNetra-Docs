@@ -1039,6 +1039,9 @@ function buildPage3() {
   if (!window._studentTableBuilt) {
     window._studentTableBuilt = true;
     for (let k = 0; k < n; k++) addStudentRow();
+    // Always start with at least one row — page 1 may have been skipped
+    // entirely (totalStudents = 0), and the table shouldn't be empty.
+    if (n === 0) addStudentRow();
   }
   updateP3Counts();
 }
