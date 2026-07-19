@@ -656,12 +656,12 @@
     <div class="page-subtitle" id="p3subtitle">Upload answer sheets for all <strong id="p3count">—</strong> students.</div>
 
     <div class="method-toggle">
-      <div class="method-card selected" id="mc-bulk" onclick="setMethod('bulk')">
+      <div class="method-card" id="mc-bulk" onclick="setMethod('bulk')">
         <div class="method-icon">📦</div>
         <div class="method-name">Bulk Upload</div>
         <div class="method-desc">Upload all sheets at once as multiple files or a single PDF</div>
       </div>
-      <div class="method-card" id="mc-single" onclick="setMethod('single')">
+      <div class="method-card selected" id="mc-single" onclick="setMethod('single')">
         <div class="method-icon">👤</div>
         <div class="method-name">Student by Student</div>
         <div class="method-desc">Upload one sheet per student — fill name and roll number for each</div>
@@ -669,7 +669,7 @@
     </div>
 
     <!-- Bulk upload panel -->
-    <div id="panel-bulk">
+    <div id="panel-bulk" style="display:none">
       <div class="card">
         <div class="card-title">📦 Bulk Upload — Answer Sheets</div>
         <div class="upload-zone" id="bulkZone" style="margin-bottom:8px" ondragover="dragOver(event,'bulkZone')" ondragleave="dragLeave('bulkZone')" ondrop="dropBulk(event)">
@@ -750,7 +750,7 @@
     </div>
 
     <!-- Student-by-student panel -->
-    <div id="panel-single" style="display:none">
+    <div id="panel-single">
       <div class="card" style="padding:0;overflow:hidden">
         <div style="padding:20px 24px;border-bottom:1px solid var(--border)">
           <div class="card-title" style="border:none;padding:0;margin:0">👤 Student Answer Sheets</div>
@@ -820,7 +820,7 @@
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
 let currentPage = 1;
-let uploadMethod = 'bulk';
+let uploadMethod = 'single';
 
 // ── Page navigation ────────────────────────────────────────────────────────
 function goPage(n) {
@@ -1343,7 +1343,7 @@ function resetForm() {
   document.getElementById('qpLabel').style.display = 'none';
   document.getElementById('akLabel').style.display = 'none';
   document.getElementById('bulkFileList').innerHTML = '';
-  setMethod('bulk');
+  setMethod('single');
   goPage(1);
 }
 </script>
